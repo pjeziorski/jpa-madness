@@ -1,0 +1,9 @@
+node_modules/
+build/
+target/
+dist/
+tmp/
+.idea/
+.project
+*.iml
+*.db
