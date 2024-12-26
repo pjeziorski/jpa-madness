@@ -103,7 +103,7 @@ public class ComplexLogicService {
 
     @SneakyThrows
     private void throwException() {
-        throw new Exception();
+        throw new Exception("Non Runtime Exception");
     }
 
 }

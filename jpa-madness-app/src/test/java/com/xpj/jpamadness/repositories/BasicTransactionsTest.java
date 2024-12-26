@@ -1,7 +1,6 @@
 package com.xpj.jpamadness.repositories;
 
 import com.xpj.jpamadness.services.ComplexLogicService;
-import com.xpj.jpamadness.services.EnforcedTransactionsNewsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
