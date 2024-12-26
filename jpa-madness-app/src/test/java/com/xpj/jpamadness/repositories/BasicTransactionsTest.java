@@ -26,6 +26,7 @@ public class BasicTransactionsTest {
         newsRepository.deleteAll();
 
         complexLogicService.setShouldThrowRuntimeException(false);
+        complexLogicService.setShouldThrowException(false);
     }
 
     @Test
@@ -105,4 +106,28 @@ public class BasicTransactionsTest {
         assertThat(newsRepository.count()).isEqualTo(5);
     }
 
+    @Test
+    public void shouldNotRollback_onNonRuntimeException() {
+        assertThat(newsRepository.count()).isEqualTo(0);
+
+        complexLogicService.setShouldThrowException(true);
+
+        // using method save
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(() -> complexLogicService.transactionWithSave());
+
+        assertThat(newsRepository.count()).isEqualTo(1);
+
+        // using method saveAndFlush
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(() -> complexLogicService.transactionWithSaveAndFlush());
+
+        assertThat(newsRepository.count()).isEqualTo(2);
+
+        // using private transactional method
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(() -> complexLogicService.privateTransactionWithSaveAndFlush());
+
+        assertThat(newsRepository.count()).isEqualTo(3);
+    }
 }
