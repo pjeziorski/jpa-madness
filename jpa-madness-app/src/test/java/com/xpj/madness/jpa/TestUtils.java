@@ -1,4 +1,4 @@
-package com.xpj.jpamadness;
+package com.xpj.madness.jpa;
 
 public class TestUtils {
 

@@ -1,8 +1,8 @@
-package com.xpj.jpamadness.repositories;
+package com.xpj.madness.jpa.repositories;
 
-import com.xpj.jpamadness.TestUtils;
-import com.xpj.jpamadness.entities.News;
-import com.xpj.jpamadness.services.EnforcedTransactionsNewsService;
+import com.xpj.madness.jpa.TestUtils;
+import com.xpj.madness.jpa.entities.News;
+import com.xpj.madness.jpa.services.EnforcedTransactionsNewsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ComponentScan("com.xpj.jpamadness.services")
+@ComponentScan("com.xpj.madness.jpa.services")
 class EntityReferencesTest {
 
     @Autowired

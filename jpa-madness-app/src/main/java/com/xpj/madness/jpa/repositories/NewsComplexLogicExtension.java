@@ -1,4 +1,4 @@
-package com.xpj.jpamadness.repositories;
+package com.xpj.madness.jpa.repositories;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

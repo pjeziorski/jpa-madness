@@ -1,6 +1,6 @@
-package com.xpj.jpamadness.repositories;
+package com.xpj.madness.jpa.repositories;
 
-import com.xpj.jpamadness.entities.News;
+import com.xpj.madness.jpa.entities.News;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

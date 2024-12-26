@@ -1,7 +1,7 @@
-package com.xpj.jpamadness.services;
+package com.xpj.madness.jpa.services;
 
-import com.xpj.jpamadness.entities.News;
-import com.xpj.jpamadness.repositories.NewsRepository;
+import com.xpj.madness.jpa.entities.News;
+import com.xpj.madness.jpa.repositories.NewsRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

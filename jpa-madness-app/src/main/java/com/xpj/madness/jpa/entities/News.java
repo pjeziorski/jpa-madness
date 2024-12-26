@@ -1,4 +1,4 @@
-package com.xpj.jpamadness.entities;
+package com.xpj.madness.jpa.entities;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

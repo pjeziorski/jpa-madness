@@ -1,6 +1,6 @@
-package com.xpj.jpamadness.repositories;
+package com.xpj.madness.jpa.repositories;
 
-import com.xpj.jpamadness.services.ComplexLogicService;
+import com.xpj.madness.jpa.services.ComplexLogicService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
-@ComponentScan("com.xpj.jpamadness.services")
+@ComponentScan("com.xpj.madness.jpa.services")
 public class BasicTransactionsTest {
 
     @Autowired

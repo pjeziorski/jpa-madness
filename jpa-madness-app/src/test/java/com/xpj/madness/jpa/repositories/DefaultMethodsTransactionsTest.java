@@ -1,4 +1,4 @@
-package com.xpj.jpamadness.repositories;
+package com.xpj.madness.jpa.repositories;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

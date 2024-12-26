@@ -1,6 +1,6 @@
-package com.xpj.jpamadness.repositories;
+package com.xpj.madness.jpa.repositories;
 
-import com.xpj.jpamadness.entities.News;
+import com.xpj.madness.jpa.entities.News;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 
