@@ -2,14 +2,16 @@ package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.entities.News;
 import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class NewsComplexLogicExtensionImpl implements NewsComplexLogicExtension {
+public class NewsEntityManagerLogicExtensionImpl implements NewsEntityManagerLogicExtension {
 
     private final EntityManager entityManager;
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void transactionWithSave() {
         News news1 = News.builder()
                 .title("a")
@@ -28,6 +30,7 @@ public class NewsComplexLogicExtensionImpl implements NewsComplexLogicExtension 
     }
 
     @Override
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void transactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")
@@ -52,6 +55,7 @@ public class NewsComplexLogicExtensionImpl implements NewsComplexLogicExtension 
         doPrivateTransactionWithSaveAndFlush();
     }
 
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     private void doPrivateTransactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")

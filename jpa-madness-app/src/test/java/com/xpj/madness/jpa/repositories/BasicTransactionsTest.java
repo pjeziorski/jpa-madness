@@ -79,7 +79,7 @@ public class BasicTransactionsTest {
     }
 
     @Test
-    public void shouldSaveAll_ignoringTransactional_forPrivateMethod() {
+    public void shouldSave_ignoringTransactional_forPrivateMethod() {
         assertThat(newsRepository.count()).isEqualTo(0);
 
         // save in single transaction
@@ -106,7 +106,34 @@ public class BasicTransactionsTest {
     }
 
     @Test
-    public void shouldNotRollback_onNonRuntimeException() {
+    public void shouldSave_forNonTransactionalMethod() {
+        assertThat(newsRepository.count()).isEqualTo(0);
+
+        // save in single transaction
+        complexLogicService.nonTransactionWithSave();
+
+        assertThat(newsRepository.count()).isEqualTo(2);
+
+        // break transaction
+        complexLogicService.setShouldThrowRuntimeException(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> complexLogicService.nonTransactionWithSave());
+
+        // IMPORTANT!
+        assertThat(newsRepository.count()).isEqualTo(3);
+
+        // save one more time to be sure
+        complexLogicService.setShouldThrowRuntimeException(false);
+
+        complexLogicService.nonTransactionWithSave();
+
+        // IMPORTANT!
+        assertThat(newsRepository.count()).isEqualTo(5);
+    }
+
+    @Test
+    public void shouldNotRollback_onCheckedException() {
         assertThat(newsRepository.count()).isEqualTo(0);
 
         complexLogicService.setShouldThrowException(true);

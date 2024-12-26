@@ -101,6 +101,30 @@ public class ComplexLogicService {
         log.info("news2 savedAndFlushed");
     }
 
+    public void nonTransactionWithSave() {
+        News news1 = News.builder()
+                .title("a")
+                .build();
+
+        newsRepository.save(news1);
+
+        log.info("news1 saved");
+
+        if (shouldThrowRuntimeException) {
+            throw new RuntimeException("Breaking save news2");
+        }
+        if (shouldThrowException) {
+            throwException();
+        }
+        News news2 = News.builder()
+                .title("b")
+                .build();
+
+        newsRepository.save(news2);
+
+        log.info("news2 saved");
+    }
+
     @SneakyThrows
     private void throwException() {
         throw new Exception("Non Runtime Exception");

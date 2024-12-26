@@ -2,7 +2,7 @@ package com.xpj.madness.jpa.repositories;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public interface NewsComplexLogicExtension {
+public interface NewsEntityManagerLogicExtension {
 
     AtomicBoolean shouldThrowRuntimeException = new AtomicBoolean(false);
 
