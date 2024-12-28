@@ -77,6 +77,7 @@ public class UnitTestsTransactionsTest {
                 .isEqualTo(expectedQueryCount);
     }
 
+    // https://stackoverflow.com/questions/27987097/disabling-transaction-on-spring-testing-test-method
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void shouldDisableUnitTestTransaction_andMakeTransactionsIndependent() {
@@ -147,6 +148,7 @@ public class UnitTestsTransactionsTest {
         assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
     }
 
+    // https://stackoverflow.com/questions/27987097/disabling-transaction-on-spring-testing-test-method
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
     public void shouldDisableSingleTransaction_forNestedTransactions() {

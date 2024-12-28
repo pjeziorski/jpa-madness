@@ -50,7 +50,7 @@ public class EagerDependenciesTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED) // enforces each call for separate transaction
+    @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
     public void shouldMake_properQueryCalls() {
         long expectedQueryCount = hibernateStatistics.getQueryCount();
 

@@ -61,7 +61,7 @@ class EntityReferencesTest {
     }
 
     @Test
-    @Transactional(propagation = Propagation.NOT_SUPPORTED) // enforces each call for separate transaction
+    @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
     public void shouldReturn_differentReference_whenCallingFindById_onDifferentTransactions() {
         // given
         News news = News.builder()
