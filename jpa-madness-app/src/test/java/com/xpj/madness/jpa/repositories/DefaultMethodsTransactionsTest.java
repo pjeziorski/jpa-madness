@@ -99,4 +99,54 @@ public class DefaultMethodsTransactionsTest {
         assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(4);
     }
 
+    @Test
+    public void shouldNotUseTransaction_usingSave() {
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(0);
+
+        // save in single transaction
+        newsRepositoryWithDefaultMethod.nonTransactionalWithSave();
+
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(2);
+
+        // break transaction
+        newsRepositoryWithDefaultMethod.shouldThrowRuntimeException.set(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> newsRepositoryWithDefaultMethod.nonTransactionalWithSave());
+
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(3);
+
+        // save one more time to be sure
+        newsRepositoryWithDefaultMethod.shouldThrowRuntimeException.set(false);
+
+        newsRepositoryWithDefaultMethod.nonTransactionalWithSave();
+
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(5);
+    }
+
+    @Test
+    public void shouldNotUseTransaction_usingSaveAndFLush() {
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(0);
+
+        // save in single transaction
+        newsRepositoryWithDefaultMethod.nonTransactionalWithSaveAndFlush();
+
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(2);
+
+        // break transaction
+        newsRepositoryWithDefaultMethod.shouldThrowRuntimeException.set(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> newsRepositoryWithDefaultMethod.nonTransactionalWithSaveAndFlush());
+
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(3);
+
+        // save one more time to be sure
+        newsRepositoryWithDefaultMethod.shouldThrowRuntimeException.set(false);
+
+        newsRepositoryWithDefaultMethod.nonTransactionalWithSaveAndFlush();
+
+        assertThat(newsRepositoryWithDefaultMethod.count()).isEqualTo(5);
+    }
+
 }
