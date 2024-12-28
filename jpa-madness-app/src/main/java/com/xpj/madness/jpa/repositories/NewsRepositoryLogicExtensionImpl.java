@@ -15,7 +15,7 @@ public class NewsRepositoryLogicExtensionImpl implements NewsRepositoryLogicExte
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public void transactionWithSave() {
         News news1 = News.builder()
                 .title("a")
@@ -34,7 +34,7 @@ public class NewsRepositoryLogicExtensionImpl implements NewsRepositoryLogicExte
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public void transactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")
@@ -57,7 +57,7 @@ public class NewsRepositoryLogicExtensionImpl implements NewsRepositoryLogicExte
         doPrivateTransactionWithSaveAndFlush();
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     private void doPrivateTransactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")

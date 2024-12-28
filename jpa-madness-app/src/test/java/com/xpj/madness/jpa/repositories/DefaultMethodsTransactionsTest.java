@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
-@Transactional(propagation = Propagation.NOT_SUPPORTED) // disable Unit Test transaction
+@Transactional(propagation = Propagation.NOT_SUPPORTED) // enforces each call for separate transaction
 public class DefaultMethodsTransactionsTest {
 
     @Autowired

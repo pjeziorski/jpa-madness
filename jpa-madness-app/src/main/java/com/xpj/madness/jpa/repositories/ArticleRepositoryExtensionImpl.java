@@ -1,6 +1,5 @@
 package com.xpj.madness.jpa.repositories;
 
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

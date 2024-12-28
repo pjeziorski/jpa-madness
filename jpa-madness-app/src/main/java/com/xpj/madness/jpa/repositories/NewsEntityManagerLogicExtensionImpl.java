@@ -11,7 +11,7 @@ public class NewsEntityManagerLogicExtensionImpl implements NewsEntityManagerLog
     private final EntityManager entityManager;
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public void transactionWithSave() {
         News news1 = News.builder()
                 .title("a")
@@ -30,7 +30,7 @@ public class NewsEntityManagerLogicExtensionImpl implements NewsEntityManagerLog
     }
 
     @Override
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public void transactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")
@@ -55,7 +55,7 @@ public class NewsEntityManagerLogicExtensionImpl implements NewsEntityManagerLog
         doPrivateTransactionWithSaveAndFlush();
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     private void doPrivateTransactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")
