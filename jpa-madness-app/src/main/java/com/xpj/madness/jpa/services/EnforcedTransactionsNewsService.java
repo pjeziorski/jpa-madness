@@ -14,17 +14,17 @@ public class EnforcedTransactionsNewsService {
 
     private final NewsRepository newsRepository;
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public News save(News news) {
         return newsRepository.save(news);
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public News saveAndFlush(News news) {
         return newsRepository.saveAndFlush(news);
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public Optional<News> findById(Long id) {
         Optional<News> newsOpt = newsRepository.findById(id);
 

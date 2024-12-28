@@ -14,12 +14,12 @@ public class BasketsService {
 
     private final BasketRepository repository;
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public Basket saveAndFlush(Basket basket) {
         return repository.saveAndFlush(basket);
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     public Optional<Basket> findById(String id) {
         return repository.findById(id);
     }

@@ -3,6 +3,8 @@ package com.xpj.madness.jpa.repositories;
 import com.xpj.madness.jpa.entities.Basket;
 import com.xpj.madness.jpa.services.BasketsService;
 import com.xpj.madness.jpa.services.HibernateStatistics;
+import com.xpj.madness.jpa.services.NestedTransactionsService;
+import com.xpj.madness.jpa.services.NestedTransactionsSubService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @ComponentScan("com.xpj.madness.jpa.services")
@@ -21,7 +24,13 @@ public class UnitTestsTransactionsTest {
     BasketRepository basketRepository;
 
     @Autowired
-    BasketsService basketsService;
+    NewsRepository newsRepository;
+
+    @Autowired
+    NestedTransactionsService nestedTransactionsService;
+
+    @Autowired
+    NestedTransactionsSubService nestedTransactionsSubService;
 
     @Autowired
     HibernateStatistics hibernateStatistics;
@@ -71,7 +80,7 @@ public class UnitTestsTransactionsTest {
 
     @Test
     @Transactional(propagation = Propagation.NOT_SUPPORTED)
-    public void shouldUseSeparateTransactions() {
+    public void shouldDisableUnitTestTransaction_andMakeTransactionsIndependent() {
         long expectedQueryCount = hibernateStatistics.getQueryCount();
 
         Basket basket = Basket.builder().build();
@@ -99,6 +108,81 @@ public class UnitTestsTransactionsTest {
         // no queries were needed
         assertThat(hibernateStatistics.getQueryCount())
                 .isEqualTo(expectedQueryCount);
+    }
+
+    @Test
+    public void shouldUseSingleTransaction_forNestedTransactions() {
+        long expectedNewsCount = newsRepository.count();
+
+        // save in single transaction
+        nestedTransactionsService.transactionWithSaveAndFlush();
+
+        expectedNewsCount += 4;
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+
+        // break transaction on main service
+        nestedTransactionsService.setShouldThrowRuntimeException(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> nestedTransactionsService.transactionWithSaveAndFlush());
+
+        expectedNewsCount += 3;
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+
+        // break transaction on sub service
+        nestedTransactionsService.setShouldThrowRuntimeException(false);
+        nestedTransactionsSubService.setShouldThrowRuntimeException(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> nestedTransactionsService.transactionWithSaveAndFlush());
+
+        expectedNewsCount += 1;
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+
+        // save one more time to be sure
+        nestedTransactionsSubService.setShouldThrowRuntimeException(false);
+
+        nestedTransactionsService.transactionWithSaveAndFlush();
+
+        expectedNewsCount += 4;
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+    }
+
+    @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED)
+    public void shouldDisableSingleTransaction_forNestedTransactions() {
+        long expectedNewsCount = newsRepository.count();
+
+        // save in single transaction
+        nestedTransactionsService.transactionWithSaveAndFlush();
+
+        expectedNewsCount += 4;
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+
+        // break transaction on main service
+        nestedTransactionsService.setShouldThrowRuntimeException(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> nestedTransactionsService.transactionWithSaveAndFlush());
+
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+
+        // break transaction on sub service
+        nestedTransactionsService.setShouldThrowRuntimeException(false);
+        nestedTransactionsSubService.setShouldThrowRuntimeException(true);
+
+        assertThatExceptionOfType(RuntimeException.class)
+                .isThrownBy(() -> nestedTransactionsService.transactionWithSaveAndFlush());
+
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
+
+        // save one more time to be sure
+        nestedTransactionsSubService.setShouldThrowRuntimeException(false);
+
+        nestedTransactionsService.transactionWithSaveAndFlush();
+
+        expectedNewsCount += 4;
+        assertThat(newsRepository.count()).isEqualTo(expectedNewsCount);
     }
 
 }

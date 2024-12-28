@@ -12,7 +12,7 @@ public interface NewsRepositoryWithDefaultMethod extends JpaRepository<News, Lon
 
     AtomicBoolean shouldThrowRuntimeException = new AtomicBoolean(false);
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     default void transactionWithSave() {
         News news1 = News.builder()
                 .title("a")
@@ -30,7 +30,7 @@ public interface NewsRepositoryWithDefaultMethod extends JpaRepository<News, Lon
         save(news2);
     }
 
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    @Transactional
     default void transactionWithSaveAndFlush() {
         News news1 = News.builder()
                 .title("a")
