@@ -1,7 +1,6 @@
 package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.entities.Basket;
-import com.xpj.madness.jpa.services.BasketsService;
 import com.xpj.madness.jpa.services.HibernateStatistics;
 import com.xpj.madness.jpa.services.NestedTransactionsService;
 import com.xpj.madness.jpa.services.NestedTransactionsSubService;

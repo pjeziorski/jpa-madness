@@ -2,13 +2,14 @@ package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.entities.Basket;
 import com.xpj.madness.jpa.entities.BasketItem;
-import com.xpj.madness.jpa.services.BasketsService;
 import com.xpj.madness.jpa.services.HibernateStatistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,9 +22,6 @@ public class EagerDependenciesTest {
 
     @Autowired
     BasketRepository basketRepository;
-
-    @Autowired
-    BasketsService basketsService;
 
     @Autowired
     HibernateStatistics hibernateStatistics;
@@ -52,6 +50,7 @@ public class EagerDependenciesTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED) // enforces each call for separate transaction
     public void shouldMake_properQueryCalls() {
         long expectedQueryCount = hibernateStatistics.getQueryCount();
 
@@ -63,7 +62,7 @@ public class EagerDependenciesTest {
                 ))
                 .build();
 
-        basketsService.saveAndFlush(basket);
+        basketRepository.saveAndFlush(basket);
 
         // 7 calls
         // insert basket
@@ -73,7 +72,7 @@ public class EagerDependenciesTest {
         assertThat(hibernateStatistics.getQueryCount())
                 .isEqualTo(expectedQueryCount);
 
-        Basket returnedBasket = basketsService.findById(basket.getId()).get();
+        Basket returnedBasket = basketRepository.findById(basket.getId()).get();
 
         // one new query for basket
         expectedQueryCount += 1;

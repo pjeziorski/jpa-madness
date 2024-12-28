@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -59,6 +61,7 @@ class EntityReferencesTest {
     }
 
     @Test
+    @Transactional(propagation = Propagation.NOT_SUPPORTED) // enforces each call for separate transaction
     public void shouldReturn_differentReference_whenCallingFindById_onDifferentTransactions() {
         // given
         News news = News.builder()

@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -75,6 +76,13 @@ public class EntityManagerTransactionsTest {
     }
 
     @Test
+    public void shouldNotPersist_forPrivateMethod() {
+        assertThatExceptionOfType(InvalidDataAccessApiUsageException.class)
+                .isThrownBy(() -> newsEntityManagerLogicRepository.privateTransactionWithSaveAndFlush());
+    }
+
+    @Test
+    @Transactional // to enable entityManager.persist()
     public void shouldSave_ignoringTransactional_forPrivateMethod() {
         assertThat(newsEntityManagerLogicRepository.count()).isEqualTo(0);
 
