@@ -27,7 +27,7 @@ public class BasketWithGraph {
 
     private String title;
 
-    @OneToMany(cascade= CascadeType.ALL, fetch = FetchType.EAGER)
+    @OneToMany(cascade= CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "basket_id")
     private List<BasketWithGraphItem> items;
 }
