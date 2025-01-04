@@ -2,6 +2,7 @@ package com.xpj.madness.jpa.services;
 
 import com.xpj.madness.jpa.entities.BasketWithGraph;
 import com.xpj.madness.jpa.repositories.BasketWithGraphRepository;
+import com.xpj.madness.jpa.repositories.BasketWithGraphRepository2;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +14,7 @@ import java.util.Optional;
 public class BasketWithGraphService {
 
     private final BasketWithGraphRepository repository;
+    private final BasketWithGraphRepository2 repository2;
 
     @Transactional
     public BasketWithGraph saveAndFlush(BasketWithGraph basketWithGraph) {
@@ -25,6 +27,26 @@ public class BasketWithGraphService {
     }
 
     @Transactional
+    public Optional<BasketWithGraph> findByIdWithEntityGraph(String id) {
+        return repository2.findById(id);
+    }
+
+    @Transactional
+    public Optional<BasketWithGraph> findWithQuery(String id) {
+        return repository2.findWithQuery(id);
+    }
+
+    @Transactional
+    public Optional<BasketWithGraph> findWithQueryAndEntityGraph(String id) {
+        return repository2.findWithQueryAndEntityGraph(id);
+    }
+
+    @Transactional
+    public Optional<BasketWithGraph> findWithQueryAndJoinFetch(String id) {
+        return repository2.findWithQueryAndJoinFetch(id);
+    }
+
+    @Transactional
     public Optional<BasketWithGraph> findByIdAndPrintItems(String id) {
         Optional<BasketWithGraph> entityOpt = repository.findById(id);
 
@@ -34,5 +56,10 @@ public class BasketWithGraphService {
         });
 
         return entityOpt;
+    }
+
+    @Transactional
+    public void withTransaction(Runnable runnable) {
+        runnable.run();
     }
 }
