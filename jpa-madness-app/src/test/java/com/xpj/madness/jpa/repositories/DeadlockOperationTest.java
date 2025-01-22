@@ -57,6 +57,9 @@ public class DeadlockOperationTest {
                     () -> performParallelOperations(() -> deadlockOperationService.performOnRepeatableRead())
                 )
                 .satisfies(ex -> ex.printStackTrace());
+
+        System.err.println("\n=== All ==");
+        offerProcessRepository.findAllByOrderByCreationTimeDesc().forEach(System.err::println);
     }
 
     @Test
@@ -74,6 +77,37 @@ public class DeadlockOperationTest {
         offerProcessRepository.findAllByOrderByCreationTimeDesc().forEach(System.err::println);
 
         assertThat(openProcesses.size()).isEqualTo(1);
+    }
+
+    /**
+     * This test is to prove that using single query to modify existing statuses will not help
+     */
+    @Test
+    public void shouldThrowDeadlock_whenUsingSingleQueryToChangeStatuses() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> {
+            deadlockOperationService.changeStatusesWithSingleQuery();
+            return null;
+        });
+
+        assertThat(offerProcessRepository.findByStatus(OfferProcessStatus.OPEN)).isEmpty();
+
+        prepareExistingProcesses();
+
+        assertThatExceptionOfType(CannotAcquireLockException.class).isThrownBy(
+                        () -> performParallelOperations(() -> {
+                            deadlockOperationService.changeStatusesWithSingleQueryOnRepeatableRead();
+                            return null;
+                        })
+                )
+                .satisfies(ex -> ex.printStackTrace());
+
+        System.err.println("\n=== All ==");
+        offerProcessRepository.findAllByOrderByCreationTimeDesc().forEach(System.err::println);
+
+        // even though some of the threads may throw error, one transaction should pass
+        assertThat(offerProcessRepository.findByStatus(OfferProcessStatus.OPEN)).isEmpty();
     }
 
     private List<OfferProcess> prepareExistingProcesses() {

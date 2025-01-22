@@ -31,11 +31,21 @@ public class DeadlockOperationService {
 
     @Retryable(
             value = CannotAcquireLockException.class,
-            maxAttempts = 2
+            maxAttempts = 3 // this is crucial in defining how many parallel executions can happen
     )
     @Transactional(isolation = Isolation.REPEATABLE_READ)
     public OfferProcess performOnRepeatableReadWithRetry() {
         return performOperation();
+    }
+
+    @Transactional
+    public void changeStatusesWithSingleQuery() {
+        markOpenProcessesAsClosedWthSingleQuery();
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void changeStatusesWithSingleQueryOnRepeatableRead() {
+        markOpenProcessesAsClosedWthSingleQuery();
     }
 
     private OfferProcess performOperation() {
@@ -52,6 +62,10 @@ public class DeadlockOperationService {
                 });
 
         offerProcessRepository.saveAll(openOfferProcesses);
+    }
+
+    private void markOpenProcessesAsClosedWthSingleQuery() {
+        offerProcessRepository.updateExistingStatuses(OfferProcessStatus.OPEN, OfferProcessStatus.CLOSED);
     }
 
     private OfferProcess addNewOpenProcess() {
