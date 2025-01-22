@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.Set;
 
 @Service
@@ -39,6 +40,16 @@ public class DeadlockOperationService {
     }
 
     @Transactional
+    public OfferProcess performOperationWithChangedOrderOnDefaultLevel() {
+        return performOperationWithChangedOrder();
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public OfferProcess performOperationWithChangedOrderOnRepeatableRead() {
+        return performOperationWithChangedOrder();
+    }
+
+    @Transactional
     public void changeStatusesWithSingleQuery() {
         markOpenProcessesAsClosedWthSingleQuery();
     }
@@ -53,6 +64,12 @@ public class DeadlockOperationService {
         return addNewOpenProcess();
     }
 
+    private OfferProcess performOperationWithChangedOrder() {
+        OfferProcess process = addNewOpenProcess();
+        markOpenProcessesAsClosed(process.getId());
+        return process;
+    }
+
     private void markOpenProcessesAsClosed() {
         Set<OfferProcess> openOfferProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
@@ -62,6 +79,18 @@ public class DeadlockOperationService {
                 });
 
         offerProcessRepository.saveAll(openOfferProcesses);
+    }
+
+    private void markOpenProcessesAsClosed(String excludeId) {
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
+
+        openProcesses.stream()
+                .filter(process -> !Objects.equals(process.getId(), excludeId))
+                .forEach(process -> {
+                    process.setStatus(OfferProcessStatus.CLOSED);
+                });
+
+        offerProcessRepository.saveAll(openProcesses);
     }
 
     private void markOpenProcessesAsClosedWthSingleQuery() {

@@ -5,6 +5,7 @@ import com.xpj.madness.jpa.entities.OfferProcess;
 import com.xpj.madness.jpa.entities.OfferProcessStatus;
 import com.xpj.madness.jpa.services.DeadlockOperationService;
 import lombok.SneakyThrows;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -34,6 +35,11 @@ public class DeadlockOperationTest {
 
     @Autowired
     DeadlockOperationService deadlockOperationService;
+
+    @BeforeEach
+    public void beforeEach() {
+        offerProcessRepository.deleteAll();
+    }
 
     @Test
     public void shouldHaveManyOpenProcesses_whenUsingReadCommitted() {
@@ -66,7 +72,7 @@ public class DeadlockOperationTest {
     public void shouldHaveOneOpenProcesses_whenUsingRepeatableReadWithRetry() {
         prepareExistingProcesses();
 
-        performParallelOperations(() -> deadlockOperationService.performOnRepeatableReadWithRetry());
+        List<OfferProcess> addedEntries = performParallelOperations(() -> deadlockOperationService.performOnRepeatableReadWithRetry());
 
         Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
@@ -74,9 +80,14 @@ public class DeadlockOperationTest {
         openProcesses.forEach(System.err::println);
 
         System.err.println("\n=== All ==");
-        offerProcessRepository.findAllByOrderByCreationTimeDesc().forEach(System.err::println);
+        List<OfferProcess> processes = offerProcessRepository.findAllByOrderByCreationTimeDesc();
+
+        processes.forEach(System.err::println);
 
         assertThat(openProcesses.size()).isEqualTo(1);
+
+        // 3 existing processes + added
+        assertThat(processes.size()).isEqualTo(3 + addedEntries.size());
     }
 
     /**
@@ -110,6 +121,42 @@ public class DeadlockOperationTest {
         assertThat(offerProcessRepository.findByStatus(OfferProcessStatus.OPEN)).isEmpty();
     }
 
+    @Test
+    public void shouldHaveSameResults_whenChangingOrderOfOperations() {
+        // on default isolation level
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> deadlockOperationService.performOperationWithChangedOrderOnDefaultLevel());
+
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+
+        assertThat(openProcesses.size()).isGreaterThan(1);
+
+        // on repeatable read
+        offerProcessRepository.deleteAll();
+
+        prepareExistingProcesses();
+
+        assertThatExceptionOfType(CannotAcquireLockException.class).isThrownBy(
+                        () -> performParallelOperations(() -> {
+                            deadlockOperationService.performOperationWithChangedOrderOnRepeatableRead();
+                            return null;
+                        })
+                )
+                .satisfies(ex -> ex.printStackTrace());
+
+        System.err.println("\n=== All ==");
+        List<OfferProcess> processes = offerProcessRepository.findAllByOrderByCreationTimeDesc();
+
+        processes.forEach(System.err::println);
+
+        // 3 existing processes + only 1 that did not have deadlock
+        assertThat(processes.size()).isEqualTo(4);
+    }
+
     private List<OfferProcess> prepareExistingProcesses() {
         List<OfferProcess> processes = List.of(
                 OfferProcess.builder()
@@ -131,7 +178,7 @@ public class DeadlockOperationTest {
 
     @SneakyThrows
     private List<OfferProcess> performParallelOperations(Supplier<OfferProcess> operation) {
-        int numberOfThreads = 2;
+        int numberOfThreads = 3;
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 
@@ -148,6 +195,17 @@ public class DeadlockOperationTest {
 
         awaitLatch.countDown();
 
+        // await all to finish
+        futureResults.stream().forEach(future -> {
+            try {
+                future.get();
+            }
+            catch (Exception e) {
+                // do nothing
+            }
+        });
+
+        // collect results
         try {
             return futureResults.stream()
                     .map(future -> {
