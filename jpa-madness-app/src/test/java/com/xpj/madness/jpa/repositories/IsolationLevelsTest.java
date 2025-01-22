@@ -33,10 +33,70 @@ public class IsolationLevelsTest {
     IsolationLevelsService isolationLevelsService;
 
     @Test
-    public void aaa() {
+    public void performOnReadUncommitted() {
         prepareExistingProcesses();
 
-        performParallelOperations(() -> isolationLevelsService.performOnSerializable());
+        performParallelOperations(() -> isolationLevelsService.performOnReadUncommitted());
+
+        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+    }
+
+    @Test
+    public void performOnReadCommitted() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> isolationLevelsService.performOnReadCommitted());
+
+        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+    }
+
+    @Test
+    public void performOnReadCommitted3() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> isolationLevelsService.performOnReadCommitted3());
+
+        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+    }
+
+    @Test
+    public void performOnRepeatableRead() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> isolationLevelsService.performOnRepeatableRead());
+
+        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+    }
+
+    @Test
+    public void performOnSerializable() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> isolationLevelsService.performOnSerializable2());
+
+        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+    }
+
+    @Test
+    public void performOnSerializable3() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> isolationLevelsService.performOnSerializable3());
 
         Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
 
