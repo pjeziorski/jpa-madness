@@ -1,6 +1,6 @@
 package com.xpj.madness.jpa.repositories;
 
-import com.xpj.madness.jpa.entities.ProcessStatus;
+import com.xpj.madness.jpa.entities.OfferProcessStatus;
 import com.xpj.madness.jpa.services.IsolationLevelsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +8,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import com.xpj.madness.jpa.entities.Process;
+import com.xpj.madness.jpa.entities.OfferProcess;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class IsolationLevelsTest {
 
     @Autowired
-    ProcessRepository processRepository;
+    OfferProcessRepository offerProcessRepository;
 
     @Autowired
     IsolationLevelsService isolationLevelsService;
@@ -38,7 +38,7 @@ public class IsolationLevelsTest {
 
         performParallelOperations(() -> isolationLevelsService.performOnReadUncommitted());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
@@ -50,7 +50,7 @@ public class IsolationLevelsTest {
 
         performParallelOperations(() -> isolationLevelsService.performOnReadCommitted());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
@@ -62,7 +62,7 @@ public class IsolationLevelsTest {
 
         performParallelOperations(() -> isolationLevelsService.performOnReadCommitted3());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
@@ -74,7 +74,7 @@ public class IsolationLevelsTest {
 
         performParallelOperations(() -> isolationLevelsService.performOnRepeatableRead());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
@@ -86,7 +86,7 @@ public class IsolationLevelsTest {
 
         performParallelOperations(() -> isolationLevelsService.performOnSerializable2());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
@@ -98,39 +98,39 @@ public class IsolationLevelsTest {
 
         performParallelOperations(() -> isolationLevelsService.performOnSerializable3());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
     }
 
-    private List<Process> prepareExistingProcesses() {
-        List<Process> processes = List.of(
-                Process.builder()
+    private List<OfferProcess> prepareExistingProcesses() {
+        List<OfferProcess> processes = List.of(
+                OfferProcess.builder()
                         .creationTime(OffsetDateTime.now())
-                        .status(ProcessStatus.CLOSED)
+                        .status(OfferProcessStatus.CLOSED)
                         .build(),
-                Process.builder()
+                OfferProcess.builder()
                         .creationTime(OffsetDateTime.now())
-                        .status(ProcessStatus.OPEN)
+                        .status(OfferProcessStatus.OPEN)
                         .build(),
-                Process.builder()
+                OfferProcess.builder()
                         .creationTime(OffsetDateTime.now())
-                        .status(ProcessStatus.CANCELLED)
+                        .status(OfferProcessStatus.CANCELLED)
                         .build()
         );
 
-        return processRepository.saveAll(processes);
+        return offerProcessRepository.saveAll(processes);
     }
 
-    private List<Process> performParallelOperations(Supplier<Process> operation) {
+    private List<OfferProcess> performParallelOperations(Supplier<OfferProcess> operation) {
         int numberOfThreads = 2;
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 
         CountDownLatch awaitLatch = new CountDownLatch(1);
 
-        List<Future<Process>> futureResults = new ArrayList<>();
+        List<Future<OfferProcess>> futureResults = new ArrayList<>();
 
         for (int i = 0; i < numberOfThreads; i++) {
             futureResults.add(executor.submit(() -> {

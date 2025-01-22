@@ -1,6 +1,6 @@
 package com.xpj.madness.jpa.entities;
 
-public enum ProcessStatus {
+public enum OfferProcessStatus {
 
     OPEN,
     CLOSED,

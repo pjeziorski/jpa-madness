@@ -1,8 +1,8 @@
 package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.RuntimeExceptionWrapper;
-import com.xpj.madness.jpa.entities.Process;
-import com.xpj.madness.jpa.entities.ProcessStatus;
+import com.xpj.madness.jpa.entities.OfferProcess;
+import com.xpj.madness.jpa.entities.OfferProcessStatus;
 import com.xpj.madness.jpa.services.DeadlockOperationService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class DeadlockOperationTest {
 
     @Autowired
-    ProcessRepository processRepository;
+    OfferProcessRepository offerProcessRepository;
 
     @Autowired
     DeadlockOperationService deadlockOperationService;
@@ -41,7 +41,7 @@ public class DeadlockOperationTest {
 
         performParallelOperations(() -> deadlockOperationService.performOnReadCommitted());
 
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         System.err.println(openProcesses.size());
         openProcesses.forEach(System.err::println);
@@ -59,34 +59,51 @@ public class DeadlockOperationTest {
                 .satisfies(ex -> ex.printStackTrace());
     }
 
-    private List<Process> prepareExistingProcesses() {
-        List<Process> processes = List.of(
-                Process.builder()
+    @Test
+    public void shouldHaveOneOpenProcesses_whenUsingRepeatableReadWithRetry() {
+        prepareExistingProcesses();
+
+        performParallelOperations(() -> deadlockOperationService.performOnRepeatableReadWithRetry());
+
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
+
+        System.err.println(openProcesses.size());
+        openProcesses.forEach(System.err::println);
+
+        System.err.println("\n=== All ==");
+        offerProcessRepository.findAllByOrderByCreationTimeDesc().forEach(System.err::println);
+
+        assertThat(openProcesses.size()).isEqualTo(1);
+    }
+
+    private List<OfferProcess> prepareExistingProcesses() {
+        List<OfferProcess> processes = List.of(
+                OfferProcess.builder()
                         .creationTime(OffsetDateTime.now())
-                        .status(ProcessStatus.CLOSED)
+                        .status(OfferProcessStatus.CLOSED)
                         .build(),
-                Process.builder()
+                OfferProcess.builder()
                         .creationTime(OffsetDateTime.now())
-                        .status(ProcessStatus.OPEN)
+                        .status(OfferProcessStatus.OPEN)
                         .build(),
-                Process.builder()
+                OfferProcess.builder()
                         .creationTime(OffsetDateTime.now())
-                        .status(ProcessStatus.CANCELLED)
+                        .status(OfferProcessStatus.CANCELLED)
                         .build()
         );
 
-        return processRepository.saveAll(processes);
+        return offerProcessRepository.saveAll(processes);
     }
 
     @SneakyThrows
-    private List<Process> performParallelOperations(Supplier<Process> operation) {
+    private List<OfferProcess> performParallelOperations(Supplier<OfferProcess> operation) {
         int numberOfThreads = 2;
 
         ExecutorService executor = Executors.newFixedThreadPool(numberOfThreads);
 
         CountDownLatch awaitLatch = new CountDownLatch(1);
 
-        List<Future<Process>> futureResults = new ArrayList<>();
+        List<Future<OfferProcess>> futureResults = new ArrayList<>();
 
         for (int i = 0; i < numberOfThreads; i++) {
             futureResults.add(executor.submit(() -> {

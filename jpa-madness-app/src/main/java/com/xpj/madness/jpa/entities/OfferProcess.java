@@ -13,7 +13,7 @@ import java.time.OffsetDateTime;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Process {
+public class OfferProcess {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -22,6 +22,6 @@ public class Process {
     private OffsetDateTime creationTime;
 
     @Enumerated(EnumType.STRING)
-    private ProcessStatus status;
+    private OfferProcessStatus status;
 
 }

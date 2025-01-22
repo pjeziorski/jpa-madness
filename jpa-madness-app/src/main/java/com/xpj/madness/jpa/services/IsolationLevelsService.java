@@ -1,11 +1,10 @@
 package com.xpj.madness.jpa.services;
 
-import com.xpj.madness.jpa.entities.Process;
-import com.xpj.madness.jpa.entities.ProcessStatus;
-import com.xpj.madness.jpa.repositories.ProcessRepository;
+import com.xpj.madness.jpa.entities.OfferProcess;
+import com.xpj.madness.jpa.entities.OfferProcessStatus;
+import com.xpj.madness.jpa.repositories.OfferProcessRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.CannotAcquireLockException;
-import org.springframework.retry.annotation.Backoff;
 import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -19,25 +18,25 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class IsolationLevelsService {
 
-    private final ProcessRepository processRepository;
+    private final OfferProcessRepository offerProcessRepository;
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public Process performOnReadUncommitted() {
+    public OfferProcess performOnReadUncommitted() {
         return performOperation();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Process performOnReadCommitted() {
+    public OfferProcess performOnReadCommitted() {
         return performOperation();
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Process performOnReadCommitted3() {
+    public OfferProcess performOnReadCommitted3() {
         return performOperation3();
     }
 
     @Transactional(isolation = Isolation.REPEATABLE_READ)
-    public Process performOnRepeatableRead() {
+    public OfferProcess performOnRepeatableRead() {
         return performOperation();
     }
 
@@ -47,70 +46,70 @@ public class IsolationLevelsService {
             //backoff = @Backoff(delay = 1000)
     )
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Process performOnSerializable() {
+    public OfferProcess performOnSerializable() {
         return performOperation();
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Process performOnSerializable2() {
+    public OfferProcess performOnSerializable2() {
         return performOperation2();
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public Process performOnSerializable3() {
+    public OfferProcess performOnSerializable3() {
         return performOperation3();
     }
 
-    private Process performOperation() {
+    private OfferProcess performOperation() {
         markOpenProcessesAsClosed();
         return addNewOpenProcess();
     }
 
-    private Process performOperation2() {
+    private OfferProcess performOperation2() {
         markOpenProcessesAsClosed2();
         return null;
         //return addNewOpenProcess();
     }
 
-    private Process performOperation3() {
-        Process newProcess = addNewOpenProcess();
+    private OfferProcess performOperation3() {
+        OfferProcess newProcess = addNewOpenProcess();
 
         markOpenProcessesAsClosed3(newProcess.getId());
         return newProcess;
     }
 
     private void markOpenProcessesAsClosed() {
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         openProcesses.stream()
                 .forEach(process -> {
-                    process.setStatus(ProcessStatus.CLOSED);
+                    process.setStatus(OfferProcessStatus.CLOSED);
                 });
 
-        processRepository.saveAll(openProcesses);
+        offerProcessRepository.saveAll(openProcesses);
     }
 
     private void markOpenProcessesAsClosed2() {
-        processRepository.updateExistingStatuses(ProcessStatus.OPEN, ProcessStatus.CLOSED);
+        offerProcessRepository.updateExistingStatuses(OfferProcessStatus.OPEN, OfferProcessStatus.CLOSED);
     }
 
     private void markOpenProcessesAsClosed3(String excludeId) {
-        Set<Process> openProcesses = processRepository.findByStatus(ProcessStatus.OPEN);
+        Set<OfferProcess> openProcesses = offerProcessRepository.findByStatus(OfferProcessStatus.OPEN);
 
         openProcesses.stream()
                 .filter(process -> !Objects.equals(process.getId(), excludeId))
                 .forEach(process -> {
-                    process.setStatus(ProcessStatus.CLOSED);
+                    process.setStatus(OfferProcessStatus.CLOSED);
                 });
 
-        processRepository.saveAll(openProcesses);
+        offerProcessRepository.saveAll(openProcesses);
     }
 
-    private Process addNewOpenProcess() {
-        Process process = Process.builder()
+    private OfferProcess addNewOpenProcess() {
+        OfferProcess process = OfferProcess.builder()
                 .creationTime(OffsetDateTime.now())
-                .status(ProcessStatus.OPEN)
+                .status(OfferProcessStatus.OPEN)
                 .build();
-        return processRepository.save(process);
+        return offerProcessRepository.save(process);
     }
 }
