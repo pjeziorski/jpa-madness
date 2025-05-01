@@ -9,15 +9,19 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.in;
 
 @DataJpaTest
 @ComponentScan("com.xpj.madness.jpa.services")
@@ -104,7 +108,7 @@ public class IsolationLevelTest {
     @Test
     public void performTest_onSerializable() {
         performTest(
-                (readTimes) -> isolationLevelService.findByStatus_onSerializable(OfferProcessStatus.OPEN, readTimes),
+                (readTimes) -> isolationLevelService.findByStatus(Isolation.SERIALIZABLE, OfferProcessStatus.OPEN, readTimes),
                 1, 1, 1, 1, 1);
     }
 
@@ -168,6 +172,51 @@ public class IsolationLevelTest {
 
         System.err.println("findOperation3 = " + findOperation3.complete().size());
         System.err.println("findOperation complete = " + findOperation.complete().size());
+    }
+
+    @Test
+    public void performUpdateTest_onSerializable() {
+        performUpdateTest(Isolation.SERIALIZABLE);
+    }
+
+    private void performUpdateTest(
+            Isolation isolationLevel
+    ) {
+        OfferProcess offerProcess1 = isolationLevelService.insertAndFlushOfferProcess(isolationLevel, OfferProcessStatus.OPEN).start().complete();
+        OfferProcess offerProcess2 = isolationLevelService.insertAndFlushOfferProcess(isolationLevel, OfferProcessStatus.CLOSED).start().complete();
+        offerProcess2.setStatus(OfferProcessStatus.OPEN);
+
+        offerProcess2.setStatus(OfferProcessStatus.OPEN);
+
+        Collection<OfferProcess> offerProcesses;
+
+        ControllableOperation<OfferProcess> insertOperation = isolationLevelService.insertAndFlushOfferProcess(isolationLevel, OfferProcessStatus.OPEN);
+        ControllableOperation<OfferProcess> updateOperation = isolationLevelService.updateAndFlushOfferProcess(isolationLevel, offerProcess2);
+        ControllableOperation<List<OfferProcess>> findAndUpdateOperation = isolationLevelService.findAndUpdate(isolationLevel,
+                OfferProcessStatus.OPEN, OfferProcessStatus.CLOSED);
+
+        insertOperation.start();
+        updateOperation.start();
+        findAndUpdateOperation.start();
+
+        // start change transactions
+        //insertOperation.resume();
+        //updateOperation.resume();
+
+        // start find and update
+        offerProcesses = (Collection<OfferProcess>)findAndUpdateOperation.resume();
+
+        System.err.println("before update: " + offerProcesses.size());
+
+        // complete transactions
+        insertOperation.complete();
+        updateOperation.complete();
+
+        offerProcesses = findAndUpdateOperation.complete();
+
+        System.err.println("after update: " + offerProcesses.size());
+
+        System.err.println(offerProcessRepository.findByStatus(OfferProcessStatus.OPEN));
     }
 
 }
