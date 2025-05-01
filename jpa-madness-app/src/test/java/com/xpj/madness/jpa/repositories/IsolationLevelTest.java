@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -76,6 +79,95 @@ public class IsolationLevelTest {
 
         offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void performTest_onReadUncommitted() {
+        performTest(
+                (readTimes) -> isolationLevelService.findByStatus_onReadUncommitted(OfferProcessStatus.OPEN, readTimes),
+                1, 2, 3, 3, 3);
+    }
+    @Test
+    public void performTest_onReadCommitted() {
+        performTest(
+                (readTimes) -> isolationLevelService.findByStatus_onReadCommitted(OfferProcessStatus.OPEN, readTimes),
+                1, 1, 1, 2, 3);
+    }
+
+    @Test
+    public void performTest_onRepeatableRead() {
+        performTest(
+                (readTimes) -> isolationLevelService.findByStatus_onRepeatableRead(OfferProcessStatus.OPEN, readTimes),
+                1, 1, 1, 1, 1);
+    }
+
+    @Test
+    public void performTest_onSerializable() {
+        performTest(
+                (readTimes) -> isolationLevelService.findByStatus_onSerializable(OfferProcessStatus.OPEN, readTimes),
+                1, 1, 1, 1, 1);
+    }
+
+    private void performTest(
+            Function<Integer, ControllableOperation<Set<OfferProcess>>> findOperationTimes,
+            int initialCount,
+            int afterInitUpdateCount,
+            int afterInitInsertCount,
+            int afterCompleteUpdateCount,
+            int afterCompleteInsertCount) {
+        OfferProcess offerProcess1 = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.OPEN).start().complete();
+        OfferProcess offerProcess2 = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.CLOSED).start().complete();
+        offerProcess2.setStatus(OfferProcessStatus.OPEN);
+
+        Set<OfferProcess> offerProcessList;
+
+        ControllableOperation<OfferProcess> insertOperation = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.OPEN);
+        ControllableOperation<OfferProcess> updateOperation = isolationLevelService.updateAndFlushOfferProcess(offerProcess2);
+        ControllableOperation<Set<OfferProcess>> findOperation = findOperationTimes.apply(5);
+        ControllableOperation<Set<OfferProcess>> findOperation2 = findOperationTimes.apply(1).start();
+        ControllableOperation<Set<OfferProcess>> findOperation3 = findOperationTimes.apply(1).start();
+
+        insertOperation.start();
+        updateOperation.start();
+        findOperation.start();
+
+        // initial
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("initialCount")
+                .isEqualTo(initialCount);
+
+        // init update
+        updateOperation.resume();
+
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("afterInitUpdateCount")
+                .isEqualTo(afterInitUpdateCount);
+
+        // init insert
+        insertOperation.resume();
+
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("afterInitInsertCount")
+                .isEqualTo(afterInitInsertCount);
+
+        // complete update
+        updateOperation.complete();
+
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("afterCompleteUpdateCount")
+                .isEqualTo(afterCompleteUpdateCount);
+
+        System.err.println("findOperation2 = " + findOperation2.complete().size());
+
+        // complete insert
+        insertOperation.complete();
+
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("afterCompleteInsertCount")
+                .isEqualTo(afterCompleteInsertCount);
+
+        System.err.println("findOperation3 = " + findOperation3.complete().size());
+        System.err.println("findOperation complete = " + findOperation.complete().size());
     }
 
 }

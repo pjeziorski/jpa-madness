@@ -43,6 +43,26 @@ public class IsolationLevelService {
         return findByStatusTimes(controllableOperation, status, readTimes);
     }
 
+    public ControllableOperation<Set<OfferProcess>> findByStatus_onRepeatableRead(OfferProcessStatus status, int readTimes) {
+        return new ControllableOperation<>(
+                (ctrl) -> isolationLevelService.findByStatus_onRepeatableRead(ctrl, status, readTimes));
+    }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public Set<OfferProcess> findByStatus_onRepeatableRead(ControllableOperation controllableOperation, OfferProcessStatus status, int readTimes) {
+        return findByStatusTimes(controllableOperation, status, readTimes);
+    }
+
+    public ControllableOperation<Set<OfferProcess>> findByStatus_onSerializable(OfferProcessStatus status, int readTimes) {
+        return new ControllableOperation<>(
+                (ctrl) -> isolationLevelService.findByStatus_onSerializable(ctrl, status, readTimes));
+    }
+
+    @Transactional(isolation = Isolation.SERIALIZABLE)
+    public Set<OfferProcess> findByStatus_onSerializable(ControllableOperation controllableOperation, OfferProcessStatus status, int readTimes) {
+        return findByStatusTimes(controllableOperation, status, readTimes);
+    }
+
     public ControllableOperation<OfferProcess> insertAndFlushOfferProcess(OfferProcessStatus status) {
         return new ControllableOperation<>(
                 (ctrl) -> isolationLevelService.insertAndFlushOfferProcess(ctrl, status));

@@ -22,7 +22,7 @@ public class ControllableOperation<R> {
     private final Function<ControllableOperation, R> operation;
 
 
-    public void start() {
+    public ControllableOperation<R> start() {
         executor.submit(() -> {
             try {
                 operationResult = operation.apply(this);
@@ -35,6 +35,8 @@ public class ControllableOperation<R> {
             }
         });
         awaitOperationAction();
+
+        return this;
     }
 
     // use only inside operation
