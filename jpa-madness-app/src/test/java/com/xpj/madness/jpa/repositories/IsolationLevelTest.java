@@ -27,8 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ComponentScan("com.xpj.madness.jpa.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("mssql")
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 public class IsolationLevelTest {
 
     @Autowired
