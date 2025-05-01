@@ -37,7 +37,7 @@ public class IsolationLevelTest {
         Set<OfferProcess> offerProcessList;
 
         ControllableOperation<OfferProcess> saveOperation = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.OPEN);
-        ControllableOperation<Set<OfferProcess>> findAllOperation = isolationLevelService.findByStatus_onReadUncommitted(OfferProcessStatus.OPEN);
+        ControllableOperation<Set<OfferProcess>> findAllOperation = isolationLevelService.findByStatus_onReadUncommitted(OfferProcessStatus.OPEN, 2);
 
         saveOperation.start();
         findAllOperation.start();
@@ -49,8 +49,7 @@ public class IsolationLevelTest {
         assertThat(offerProcessList.size()).isEqualTo(1);
 
         // do save commit
-        saveOperation.resume();
-        saveOperation.getResult();
+        saveOperation.complete();
 
         offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(1);
@@ -61,7 +60,7 @@ public class IsolationLevelTest {
         Set<OfferProcess> offerProcessList;
 
         ControllableOperation<OfferProcess> saveOperation = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.OPEN);
-        ControllableOperation<Set<OfferProcess>> findAllOperation = isolationLevelService.findByStatus_onReadCommitted(OfferProcessStatus.OPEN);
+        ControllableOperation<Set<OfferProcess>> findAllOperation = isolationLevelService.findByStatus_onReadCommitted(OfferProcessStatus.OPEN, 2);
 
         saveOperation.start();
         findAllOperation.start();
@@ -73,8 +72,7 @@ public class IsolationLevelTest {
         assertThat(offerProcessList.size()).isEqualTo(0);
 
         // do save commit
-        saveOperation.resume();
-        saveOperation.getResult();
+        saveOperation.complete();
 
         offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(1);

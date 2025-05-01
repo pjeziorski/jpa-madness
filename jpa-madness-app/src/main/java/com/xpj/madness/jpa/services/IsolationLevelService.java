@@ -23,27 +23,26 @@ public class IsolationLevelService {
         this.isolationLevelService = isolationLevelService;
     }
 
-    public ControllableOperation<Set<OfferProcess>> findByStatus_onReadUncommitted(OfferProcessStatus status) {
+    public ControllableOperation<Set<OfferProcess>> findByStatus_onReadUncommitted(OfferProcessStatus status, int readTimes) {
         return new ControllableOperation<>(
-                (ctrl) -> isolationLevelService.findByStatus_onReadUncommitted(ctrl, status));
+                (ctrl) -> isolationLevelService.findByStatus_onReadUncommitted(ctrl, status, readTimes));
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
-    public Set<OfferProcess> findByStatus_onReadUncommitted(ControllableOperation controllableOperation, OfferProcessStatus status) {
-        return findByStatusTwice(controllableOperation, status);
+    public Set<OfferProcess> findByStatus_onReadUncommitted(ControllableOperation controllableOperation, OfferProcessStatus status, int readTimes) {
+        return findByStatusTimes(controllableOperation, status, readTimes);
     }
 
-    public ControllableOperation<Set<OfferProcess>> findByStatus_onReadCommitted(OfferProcessStatus status) {
+    public ControllableOperation<Set<OfferProcess>> findByStatus_onReadCommitted(OfferProcessStatus status, int readTimes) {
         return new ControllableOperation<>(
-                (ctrl) -> isolationLevelService.findByStatus_onReadCommitted(ctrl, status));
+                (ctrl) -> isolationLevelService.findByStatus_onReadCommitted(ctrl, status, readTimes));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public Set<OfferProcess> findByStatus_onReadCommitted(ControllableOperation controllableOperation, OfferProcessStatus status) {
-        return findByStatusTwice(controllableOperation, status);
+    public Set<OfferProcess> findByStatus_onReadCommitted(ControllableOperation controllableOperation, OfferProcessStatus status, int readTimes) {
+        return findByStatusTimes(controllableOperation, status, readTimes);
     }
 
-    @Transactional
     public ControllableOperation<OfferProcess> insertAndFlushOfferProcess(OfferProcessStatus status) {
         return new ControllableOperation<>(
                 (ctrl) -> isolationLevelService.insertAndFlushOfferProcess(ctrl, status));
@@ -65,14 +64,31 @@ public class IsolationLevelService {
         );
     }
 
-    private Set<OfferProcess> findByStatusTwice(ControllableOperation controllableOperation, OfferProcessStatus status) {
-        controllableOperation.pauseBefore(
-                () -> offerProcessRepository.findByStatus(status)
+    public ControllableOperation<OfferProcess> updateAndFlushOfferProcess(OfferProcess offerProcess) {
+        return new ControllableOperation<>(
+                (ctrl) -> isolationLevelService.updateAndFlushOfferProcess(ctrl, offerProcess));
+    }
+
+    @Transactional
+    public OfferProcess updateAndFlushOfferProcess(ControllableOperation controllableOperation, OfferProcess offerProcess) {
+        OfferProcess savedOfferProcess = (OfferProcess)controllableOperation.pauseBefore(
+                () -> offerProcessRepository.saveAndFlush(offerProcess)
         );
 
-        return (Set<OfferProcess>)controllableOperation.pauseBefore(
-                () -> offerProcessRepository.findByStatus(status)
+        return (OfferProcess)controllableOperation.pauseBefore(
+                () -> savedOfferProcess
         );
+    }
+
+    private Set<OfferProcess> findByStatusTimes(ControllableOperation controllableOperation, OfferProcessStatus status, int readTimes) {
+        Set<OfferProcess> lastResult = null;
+
+        for (int i = 0; i < readTimes; i++) {
+            lastResult = (Set<OfferProcess>)controllableOperation.pauseBefore(
+                    () -> offerProcessRepository.findByStatus(status)
+            );
+        }
+        return lastResult;
     }
 
 

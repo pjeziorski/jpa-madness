@@ -37,20 +37,6 @@ public class ControllableOperation<R> {
         awaitOperationAction();
     }
 
-    private void awaitOperationAction() {
-        for (int i = 0; i < 20; i++) {
-            try {
-                Thread.currentThread().sleep(200);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (currentAwait != null || operationResultLock.getCount() == 0) {
-                return;
-            }
-        }
-        throw new RuntimeException("Timeout on waiting for operation action");
-    }
-
     // use only inside operation
     public <T> T pauseBefore(Callable<T> subOperation) {
         AwaitResult<T> await = new AwaitResult<>(subOperation);
@@ -65,18 +51,37 @@ public class ControllableOperation<R> {
     public Object resume() {
         AwaitResult await = currentAwait;
         currentAwait = null;
-        return await.resume();
+        Object result = await.resume();
+
+        awaitOperationAction();
+
+        return result;
     }
 
     @SneakyThrows
-    public R getResult() {
-        operationResultLock.await();
-
+    public R complete() {
+        while (isPaused()) {
+            resume();
+        }
         if (operationException != null) {
             throw operationException;
         }
 
         return operationResult;
+    }
+
+    private void awaitOperationAction() {
+        for (int i = 0; i < 20; i++) {
+            try {
+                Thread.currentThread().sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (currentAwait != null || operationResultLock.getCount() == 0) {
+                return;
+            }
+        }
+        throw new RuntimeException("Timeout on waiting for operation action");
     }
 
     class AwaitResult<SubOperationResult> {
