@@ -19,12 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @DataJpaTest
 @ComponentScan("com.xpj.madness.jpa.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@ActiveProfiles("postgres")
+@ActiveProfiles("mssql")
 public class IsolationLevelTest2 {
 
     @Autowired
@@ -75,7 +77,7 @@ public class IsolationLevelTest2 {
 
     @Test
     public void test2() {
-        Isolation isolationLevel = Isolation.SERIALIZABLE;
+        Isolation isolationLevel = Isolation.REPEATABLE_READ;
 
         OfferProcess offerProcess1 = offerProcessRepository.saveAndFlush(OfferProcess.builder()
                 .creationTime(OffsetDateTime.now())
@@ -94,12 +96,22 @@ public class IsolationLevelTest2 {
                 .build());
 
         updateStatuses.start();
-        insert.start();
 
         updateStatuses.resume(); // list all
-        updateStatuses.resume();
 
-        insert.complete();
+        Executors.newSingleThreadExecutor().submit(() -> {
+            System.err.println("start insert");
+                    transactionalWrapper.wrap(isolationLevel, () -> offerProcessRepository.saveAndFlush(OfferProcess.builder()
+                            .creationTime(OffsetDateTime.now())
+                            .status(OfferProcessStatus.OPEN)
+                            .build()));
+            System.err.println("insert finished");
+                });
+
+        //updateStatuses.resumeAsync();
+
+//        insert.start();
+//        insert.complete();
 
         System.err.println(offerProcessRepository.findByStatus(OfferProcessStatus.OPEN).size());
 

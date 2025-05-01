@@ -60,15 +60,15 @@ public class IsolationLevelService2 {
                     ctrl.pauseBefore("updateExistingStatuses",
                             () -> offerProcessRepository.updateExistingStatuses(fromStatus, toStatus));
 
-                    return (List<OfferProcess>)ctrl.pauseBefore(() -> new ArrayList(offersToUpdate));
+                    return (List<OfferProcess>)ctrl.pauseBefore("finish updateStatuses", () -> new ArrayList(offersToUpdate));
                 }));
     }
 
     public ControllableOperation<OfferProcess> insertAndFlush(Isolation isolationLevel, OfferProcess offerProcess) {
         return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
                 () -> {
-                    ctrl.pauseBefore("find from Status",
-                            () -> offerProcessRepository.findByStatus(offerProcess.getStatus()));
+//                    ctrl.pauseBefore("find from Status",
+//                            () -> offerProcessRepository.findByStatus(offerProcess.getStatus()));
 
                     OfferProcess savedOfferProcess = (OfferProcess)ctrl.pauseBefore("saveAndFlush", () ->
                         offerProcessRepository.saveAndFlush(offerProcess));
