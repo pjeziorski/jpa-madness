@@ -106,5 +106,24 @@ public class NestedTransactionsTest {
         assertThat(newsRepository.count()).isEqualTo(8);
     }
 
+    @Test
+    public void shouldNotRollback_onCheckedException() {
+        assertThat(newsRepository.count()).isEqualTo(0);
+
+        // break transaction on main service
+        nestedTransactionsService.setShouldThrowException(true);
+
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(() -> nestedTransactionsService.transactionWithSaveAndFlush());
+
+        assertThat(newsRepository.count()).isEqualTo(3);
+
+        // check using without flush
+        assertThatExceptionOfType(Exception.class)
+                .isThrownBy(() -> nestedTransactionsService.transactionWithSave());
+
+        assertThat(newsRepository.count()).isEqualTo(6);
+    }
+
 
 }
