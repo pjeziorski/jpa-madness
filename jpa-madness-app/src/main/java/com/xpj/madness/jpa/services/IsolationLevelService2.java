@@ -1,0 +1,60 @@
+package com.xpj.madness.jpa.services;
+
+import com.xpj.madness.jpa.entities.OfferProcess;
+import com.xpj.madness.jpa.entities.OfferProcessStatus;
+import com.xpj.madness.jpa.repositories.OfferProcessRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+
+import java.util.List;
+import java.util.Set;
+
+@Service
+@RequiredArgsConstructor
+public class IsolationLevelService2 {
+
+    private final OfferProcessRepository offerProcessRepository;
+    private final TransactionalWrapper transactionalWrapper;
+
+    public ControllableOperation<OfferProcess> listAndUpdate(Isolation isolationLevel, String idToUpdate) {
+        return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
+                () -> {
+                    OfferProcess offerProcess = (OfferProcess)ctrl.pauseBefore("listAndFind", () -> listAndFind(idToUpdate));
+
+                    OfferProcess savedOfferProcess = (OfferProcess)ctrl.pauseBefore("saveAndFlush", () -> {
+                        OfferProcess sop = offerProcessRepository.saveAndFlush(offerProcess);
+                        //offerProcessRepository.findAll();
+                        return sop;
+                    });
+
+                    return (OfferProcess)ctrl.pauseBefore(() -> savedOfferProcess);
+                }));
+    }
+
+    private OfferProcess listAndFind(String idToUpdate) {
+        List<OfferProcess> offerProcesses = offerProcessRepository.findAll();
+
+        OfferProcess offerProcess = offerProcesses.stream().filter(op -> op.getId().equals(idToUpdate))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("No offerProcess with id=" + idToUpdate));
+
+        offerProcess.setStatus(OfferProcessStatus.CANCELLED);
+        return offerProcess;
+    }
+
+    public ControllableOperation<List<OfferProcess>> updateStatuses(Isolation isolationLevel, OfferProcessStatus fromStatus, OfferProcessStatus toStatus) {
+        return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
+                () -> {
+                    Set<OfferProcess> offersToUpdate = (Set<OfferProcess>)ctrl.pauseBefore("find from Status",
+                            () -> offerProcessRepository.findByStatus(fromStatus));
+
+                    offersToUpdate.forEach(offerProcess -> offerProcess.setStatus(toStatus));
+
+                    List<OfferProcess> savedOfferProcesses = (List<OfferProcess>)ctrl.pauseBefore("saveAllAndFlush",
+                            () -> offerProcessRepository.saveAllAndFlush(offersToUpdate));
+
+                    return (List<OfferProcess>)ctrl.pauseBefore(() -> savedOfferProcesses);
+                }));
+    }
+}

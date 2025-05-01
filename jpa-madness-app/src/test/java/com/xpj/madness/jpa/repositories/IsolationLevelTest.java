@@ -197,11 +197,12 @@ public class IsolationLevelTest {
 
         insertOperation.start();
         updateOperation.start();
-        findAndUpdateOperation.start();
 
         // start change transactions
-        //insertOperation.resume();
-        //updateOperation.resume();
+        insertOperation.resume();
+        updateOperation.resume();
+
+        findAndUpdateOperation.start();
 
         // start find and update
         offerProcesses = (Collection<OfferProcess>)findAndUpdateOperation.resume();
@@ -209,10 +210,13 @@ public class IsolationLevelTest {
         System.err.println("before update: " + offerProcesses.size());
 
         // complete transactions
-        insertOperation.complete();
-        updateOperation.complete();
+        //insertOperation.complete();
+        //updateOperation.complete();
 
         offerProcesses = findAndUpdateOperation.complete();
+
+        insertOperation.complete();
+        updateOperation.complete();
 
         System.err.println("after update: " + offerProcesses.size());
 

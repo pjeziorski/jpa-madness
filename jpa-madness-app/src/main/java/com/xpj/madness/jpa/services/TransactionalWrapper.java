@@ -3,6 +3,7 @@ package com.xpj.madness.jpa.services;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.function.Supplier;
@@ -14,6 +15,10 @@ public class TransactionalWrapper {
 
     public TransactionalWrapper(@Lazy TransactionalWrapper transactionalWrapper) {
         this.transactionalWrapper = transactionalWrapper;
+    }
+
+    public <T> T wrap3(Isolation isolationLevel, Supplier<T> operation) {
+        return operation.get();
     }
 
     public <T> T wrap(Isolation isolationLevel, Supplier<T> operation) {

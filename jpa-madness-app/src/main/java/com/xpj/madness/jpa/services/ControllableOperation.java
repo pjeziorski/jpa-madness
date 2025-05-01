@@ -46,6 +46,18 @@ public class ControllableOperation<R> {
         return await.pause();
     }
 
+    public <T> T pauseBefore(String message, Callable<T> subOperation) {
+        System.err.println(Thread.currentThread().getName() + " before " + message);
+        try {
+            AwaitResult<T> await = new AwaitResult<>(subOperation);
+            currentAwait = await;
+            return await.pause();
+        }
+        finally {
+            System.err.println(Thread.currentThread().getName() + " after " + message);
+        }
+    }
+
     public boolean isPaused() {
         return currentAwait != null;
     }
@@ -58,6 +70,12 @@ public class ControllableOperation<R> {
         awaitOperationAction();
 
         return result;
+    }
+
+    public void resumeAsync() {
+        AwaitResult await = currentAwait;
+        currentAwait = null;
+        await.resumeAsync();
     }
 
     @SneakyThrows
@@ -116,7 +134,7 @@ public class ControllableOperation<R> {
                 return result;
             }
             catch (Throwable e) {
-                System.err.println(e);
+                e.printStackTrace();
                 throw e;
             }
             finally {
@@ -129,6 +147,10 @@ public class ControllableOperation<R> {
             subOperationLock.countDown();
             resultLock.await();
             return result;
+        }
+
+        public void resumeAsync() {
+            subOperationLock.countDown();
         }
 
     }

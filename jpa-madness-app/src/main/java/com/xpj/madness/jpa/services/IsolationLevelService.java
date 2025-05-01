@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 @Service
@@ -109,8 +110,11 @@ public class IsolationLevelService {
     public ControllableOperation<OfferProcess> updateAndFlushOfferProcess(Isolation isolationLevel, OfferProcess offerProcess) {
         return new ControllableOperation<>(
                 (ctrl) -> transactionalWrapper.wrap(isolationLevel, () -> {
+                    OfferProcess changeProcess = offerProcessRepository.findById(offerProcess.getId()).get();
+                    changeProcess.setStatus(offerProcess.getStatus());
+
                     OfferProcess savedOfferProcess = (OfferProcess)ctrl.pauseBefore(
-                            () -> offerProcessRepository.saveAndFlush(offerProcess)
+                            () -> offerProcessRepository.saveAndFlush(changeProcess)
                     );
 
                     return (OfferProcess)ctrl.pauseBefore(
