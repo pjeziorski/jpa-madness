@@ -34,6 +34,21 @@ public class ControllableOperation<R> {
                 operationResultLock.countDown();
             }
         });
+        awaitOperationAction();
+    }
+
+    private void awaitOperationAction() {
+        for (int i = 0; i < 20; i++) {
+            try {
+                Thread.currentThread().sleep(200);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            if (currentAwait != null || operationResultLock.getCount() == 0) {
+                return;
+            }
+        }
+        throw new RuntimeException("Timeout on waiting for operation action");
     }
 
     // use only inside operation
@@ -92,6 +107,10 @@ public class ControllableOperation<R> {
                 result = subOperation.call();
 
                 return result;
+            }
+            catch (Throwable e) {
+                System.err.println(e);
+                throw e;
             }
             finally {
                 resultLock.countDown();

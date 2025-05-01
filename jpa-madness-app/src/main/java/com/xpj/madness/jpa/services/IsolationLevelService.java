@@ -25,7 +25,7 @@ public class IsolationLevelService {
 
     public ControllableOperation<List<OfferProcess>> findAll_onReadUncommitted() {
         return new ControllableOperation<>(
-                (ctrl) -> findAll_onReadUncommitted(ctrl));
+                (ctrl) -> isolationLevelService.findAll_onReadUncommitted(ctrl));
     }
 
     @Transactional(isolation = Isolation.READ_UNCOMMITTED)
@@ -35,7 +35,7 @@ public class IsolationLevelService {
 
     public ControllableOperation<List<OfferProcess>> findAll_onReadCommitted() {
         return new ControllableOperation<>(
-                (ctrl) -> findAll_onReadCommitted(ctrl));
+                (ctrl) -> isolationLevelService.findAll_onReadCommitted(ctrl));
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -44,14 +44,20 @@ public class IsolationLevelService {
     }
 
     @Transactional
-    public OfferProcess saveOfferProcess(ControllableOperation controllableOperation) {
+    public ControllableOperation<OfferProcess> saveAndFlushOfferProcess() {
+        return new ControllableOperation<>(
+                (ctrl) -> isolationLevelService.saveAndFlushOfferProcess(ctrl));
+    }
+
+    @Transactional
+    public OfferProcess saveAndFlushOfferProcess(ControllableOperation controllableOperation) {
         OfferProcess offerProcess = OfferProcess.builder()
                 .creationTime(OffsetDateTime.now())
                 .status(OfferProcessStatus.OPEN)
                 .build();
 
         OfferProcess savedOfferProcess = (OfferProcess)controllableOperation.pauseBefore(
-                () -> offerProcessRepository.save(offerProcess)
+                () -> offerProcessRepository.saveAndFlush(offerProcess)
         );
 
         return (OfferProcess)controllableOperation.pauseBefore(
