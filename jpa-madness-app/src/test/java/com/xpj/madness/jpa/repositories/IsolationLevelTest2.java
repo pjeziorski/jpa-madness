@@ -9,8 +9,10 @@ import com.xpj.madness.jpa.services.TransactionalWrapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,8 @@ import java.util.List;
 @DataJpaTest
 @ComponentScan("com.xpj.madness.jpa.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
+@ActiveProfiles("postgres")
 public class IsolationLevelTest2 {
 
     @Autowired
@@ -39,7 +43,7 @@ public class IsolationLevelTest2 {
 
     @Test
     public void test() {
-        Isolation isolationLevel = Isolation.REPEATABLE_READ;
+        Isolation isolationLevel = Isolation.SERIALIZABLE;
 
         OfferProcess offerProcess1 = offerProcessRepository.saveAndFlush(OfferProcess.builder()
                 .creationTime(OffsetDateTime.now())
@@ -84,15 +88,20 @@ public class IsolationLevelTest2 {
 
         ControllableOperation<List<OfferProcess>> updateStatuses =
                 isolationLevelService.updateStatuses(isolationLevel, OfferProcessStatus.OPEN, OfferProcessStatus.CLOSED);
-
-        updateStatuses.start();
-        updateStatuses.resume(); // list all
-
-        transactionalWrapper.wrap(isolationLevel, () ->
-        offerProcessRepository.saveAndFlush(OfferProcess.builder()
+        ControllableOperation<OfferProcess> insert = isolationLevelService.insertAndFlush(isolationLevel, OfferProcess.builder()
                 .creationTime(OffsetDateTime.now())
                 .status(OfferProcessStatus.OPEN)
-                .build()));
+                .build());
+
+        updateStatuses.start();
+        insert.start();
+
+        updateStatuses.resume(); // list all
+        updateStatuses.resume();
+
+        insert.complete();
+
+        System.err.println(offerProcessRepository.findByStatus(OfferProcessStatus.OPEN).size());
 
         updateStatuses.complete();
 

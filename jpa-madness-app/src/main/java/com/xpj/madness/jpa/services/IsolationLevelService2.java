@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -51,10 +52,28 @@ public class IsolationLevelService2 {
 
                     offersToUpdate.forEach(offerProcess -> offerProcess.setStatus(toStatus));
 
-                    List<OfferProcess> savedOfferProcesses = (List<OfferProcess>)ctrl.pauseBefore("saveAllAndFlush",
+                    /*List<OfferProcess> savedOfferProcesses = (List<OfferProcess>)ctrl.pauseBefore("saveAllAndFlush",
                             () -> offerProcessRepository.saveAllAndFlush(offersToUpdate));
 
-                    return (List<OfferProcess>)ctrl.pauseBefore(() -> savedOfferProcesses);
+                    return (List<OfferProcess>)ctrl.pauseBefore(() -> savedOfferProcesses);*/
+
+                    ctrl.pauseBefore("updateExistingStatuses",
+                            () -> offerProcessRepository.updateExistingStatuses(fromStatus, toStatus));
+
+                    return (List<OfferProcess>)ctrl.pauseBefore(() -> new ArrayList(offersToUpdate));
+                }));
+    }
+
+    public ControllableOperation<OfferProcess> insertAndFlush(Isolation isolationLevel, OfferProcess offerProcess) {
+        return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
+                () -> {
+                    ctrl.pauseBefore("find from Status",
+                            () -> offerProcessRepository.findByStatus(offerProcess.getStatus()));
+
+                    OfferProcess savedOfferProcess = (OfferProcess)ctrl.pauseBefore("saveAndFlush", () ->
+                        offerProcessRepository.saveAndFlush(offerProcess));
+
+                    return (OfferProcess)ctrl.pauseBefore(() -> savedOfferProcess);
                 }));
     }
 }
