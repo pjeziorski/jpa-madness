@@ -1,8 +1,10 @@
 package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.entities.OfferProcess;
+import com.xpj.madness.jpa.entities.OfferProcessStatus;
 import com.xpj.madness.jpa.services.ControllableOperation;
 import com.xpj.madness.jpa.services.IsolationLevelService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -10,7 +12,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -22,12 +24,20 @@ public class IsolationLevelTest {
     @Autowired
     private IsolationLevelService isolationLevelService;
 
+    @Autowired
+    private OfferProcessRepository offerProcessRepository;
+
+    @BeforeEach
+    public void setUp() {
+        offerProcessRepository.deleteAll();
+    }
+
     @Test
     public void shouldGetUncommitted_onReadUncommitted() {
-        List<OfferProcess> offerProcessList;
+        Set<OfferProcess> offerProcessList;
 
-        ControllableOperation<OfferProcess> saveOperation = isolationLevelService.saveAndFlushOfferProcess();
-        ControllableOperation<List<OfferProcess>> findAllOperation = isolationLevelService.findAll_onReadUncommitted();
+        ControllableOperation<OfferProcess> saveOperation = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.OPEN);
+        ControllableOperation<Set<OfferProcess>> findAllOperation = isolationLevelService.findByStatus_onReadUncommitted(OfferProcessStatus.OPEN);
 
         saveOperation.start();
         findAllOperation.start();
@@ -35,23 +45,23 @@ public class IsolationLevelTest {
         // save without commit
         saveOperation.resume();
 
-        offerProcessList = (List<OfferProcess>)findAllOperation.resume();
+        offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(1);
 
         // do save commit
         saveOperation.resume();
         saveOperation.getResult();
 
-        offerProcessList = (List<OfferProcess>)findAllOperation.resume();
+        offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(1);
     }
 
     @Test
     public void shouldNotGetUncommitted_onReadCommitted() {
-        List<OfferProcess> offerProcessList;
+        Set<OfferProcess> offerProcessList;
 
-        ControllableOperation<OfferProcess> saveOperation = isolationLevelService.saveAndFlushOfferProcess();
-        ControllableOperation<List<OfferProcess>> findAllOperation = isolationLevelService.findAll_onReadCommitted();
+        ControllableOperation<OfferProcess> saveOperation = isolationLevelService.insertAndFlushOfferProcess(OfferProcessStatus.OPEN);
+        ControllableOperation<Set<OfferProcess>> findAllOperation = isolationLevelService.findByStatus_onReadCommitted(OfferProcessStatus.OPEN);
 
         saveOperation.start();
         findAllOperation.start();
@@ -59,14 +69,14 @@ public class IsolationLevelTest {
         // save without commit
         saveOperation.resume();
 
-        offerProcessList = (List<OfferProcess>)findAllOperation.resume();
+        offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(0);
 
         // do save commit
         saveOperation.resume();
         saveOperation.getResult();
 
-        offerProcessList = (List<OfferProcess>)findAllOperation.resume();
+        offerProcessList = (Set<OfferProcess>)findAllOperation.resume();
         assertThat(offerProcessList.size()).isEqualTo(1);
     }
 
