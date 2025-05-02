@@ -3,6 +3,7 @@ package com.xpj.madness.jpa.services;
 import com.xpj.madness.jpa.entities.OfferProcess;
 import com.xpj.madness.jpa.entities.OfferProcessStatus;
 import com.xpj.madness.jpa.repositories.OfferProcessRepository;
+import com.xpj.madness.jpa.utils.ControllableOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;

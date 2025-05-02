@@ -2,8 +2,7 @@ package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.entities.OfferProcess;
 import com.xpj.madness.jpa.entities.OfferProcessStatus;
-import com.xpj.madness.jpa.services.ControllableOperation;
-import com.xpj.madness.jpa.services.IsolationLevelService;
+import com.xpj.madness.jpa.utils.ControllableOperation;
 import com.xpj.madness.jpa.services.IsolationLevelService2;
 import com.xpj.madness.jpa.services.TransactionalWrapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,14 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @DataJpaTest

@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.services;
+package com.xpj.madness.jpa.utils;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
