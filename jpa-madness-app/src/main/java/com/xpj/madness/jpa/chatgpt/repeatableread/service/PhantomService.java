@@ -36,4 +36,25 @@ public class PhantomService {
         System.out.println("[T2] Inserting new account");
         accountRepository.save(newAccount);
     }
+
+    @Transactional(isolation = Isolation.REPEATABLE_READ)
+    public void repeatableReadTest() throws InterruptedException {
+        System.out.println("[T1] First read:");
+        Account a1 = accountRepository.findById(2).orElseThrow();
+        System.out.println("[T1] Balance: " + a1.getBalance());
+
+        Thread.sleep(5000); // T2 modyfikuje balance
+
+        System.out.println("[T1] Second read:");
+        Account a2 = accountRepository.findById(2).orElseThrow();
+        System.out.println("[T1] Balance: " + a2.getBalance());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void modifyBalanceInSeparateTransaction() {
+        Account acc = accountRepository.findById(2).orElseThrow();
+        System.out.println("[T2] Modifying balance to 999");
+        acc.setBalance(999);
+        accountRepository.save(acc);
+    }
 }

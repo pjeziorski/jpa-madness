@@ -31,7 +31,7 @@ public class DemoApplication implements CommandLineRunner {
 
         Thread t1 = new Thread(() -> {
             try {
-                phantomService.transaction1();
+                phantomService.repeatableReadTest();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -40,7 +40,7 @@ public class DemoApplication implements CommandLineRunner {
         Thread t2 = new Thread(() -> {
             try {
                 Thread.sleep(2000);
-                phantomService.transaction2();
+                phantomService.modifyBalanceInSeparateTransaction();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

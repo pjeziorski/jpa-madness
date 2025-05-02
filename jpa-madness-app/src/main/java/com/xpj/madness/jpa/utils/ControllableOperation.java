@@ -80,6 +80,10 @@ public class ControllableOperation<R> {
         return operationResult;
     }
 
+    public Future<R> completeAsync() {
+        return Executors.newSingleThreadExecutor().submit(() -> complete());
+    }
+
     private void awaitOperationAction() {
         for (int i = 0; i < 20; i++) {
             try {
