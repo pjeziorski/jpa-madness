@@ -98,11 +98,11 @@ public class IsolationLevelService {
                             .status(status)
                             .build();
 
-                    OfferProcess savedOfferProcess = (OfferProcess)ctrl.pauseBefore("saveAndFlush",
+                    OfferProcess savedOfferProcess = ctrl.pauseBefore("saveAndFlush",
                             () -> offerProcessRepository.saveAndFlush(offerProcess)
                     );
 
-                    return (OfferProcess)ctrl.pauseBefore("commit",
+                    return ctrl.pauseBefore("commit",
                             () -> savedOfferProcess
                     );
                 }));
@@ -164,7 +164,7 @@ public class IsolationLevelService {
         );
     }
 
-    private Set<OfferProcess> findByStatusTimes(ControllableOperation controllableOperation, OfferProcessStatus status, int readTimes) {
+    private Set<OfferProcess> findByStatusTimes(ControllableOperation<?> controllableOperation, OfferProcessStatus status, int readTimes) {
         Set<OfferProcess> lastResult = null;
 
         for (int i = 0; i < readTimes; i++) {

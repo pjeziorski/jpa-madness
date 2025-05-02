@@ -1,19 +1,15 @@
 package com.xpj.madness.jpa.services;
 
-import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 
-import java.util.concurrent.Callable;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Function;
 
 public class ControllableOperation<R> {
 
     private final ExecutorService executor;
 
-    private final Function<ControllableOperation, R> operation;
+    private final Function<ControllableOperation<R>, R> operation;
 
     private AwaitResult<?> currentAwait;
     private CountDownLatch operationResultLock = new CountDownLatch(1);
@@ -21,9 +17,8 @@ public class ControllableOperation<R> {
     private Throwable operationException;
 
     public ControllableOperation(String operationName,
-                                 Function<ControllableOperation, R> operation) {
-        this.executor = Executors.newSingleThreadExecutor(
-                (runnable) -> new Thread(runnable, "thread-" + operationName));
+                                 Function<ControllableOperation<R>, R> operation) {
+        this.executor = Executors.newSingleThreadExecutor(NamedThreadFactory.create(operationName));
         this.operation = operation;
     }
 
@@ -65,10 +60,10 @@ public class ControllableOperation<R> {
         return result;
     }
 
-    public void resumeAsync() {
+    public Future<Object> resumeAsync() {
         AwaitResult await = currentAwait;
         currentAwait = null;
-        await.resumeAsync();
+        return await.resumeAsync();
     }
 
     @SneakyThrows
@@ -147,14 +142,18 @@ public class ControllableOperation<R> {
         }
 
         @SneakyThrows
-        public Object resume() {
+        public SubOperationResult resume() {
             subOperationLock.countDown();
             resultLock.await();
+
+            if (resultException != null) {
+                throw resultException;
+            }
             return result;
         }
 
-        public void resumeAsync() {
-            subOperationLock.countDown();
+        public Future<SubOperationResult> resumeAsync() {
+            return Executors.newSingleThreadExecutor().submit(() -> resume());
         }
 
         private void log(String message) {
