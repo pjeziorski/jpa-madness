@@ -65,9 +65,9 @@ public class IsolationLevelOnReads_MssqlTest {
 
         System.err.println("\n=== START ===\n");
 
+        findOperation.start();
         insertOperation.start();
         updateOperation.start();
-        findOperation.start();
 
         // initial
         System.err.println("\nSTART initialCount");
@@ -103,7 +103,113 @@ public class IsolationLevelOnReads_MssqlTest {
 
     @Test
     @EnabledIf("isActiveProfileMssql")
-    public void performTest_onSerializable() {
+    public void performTest_onRepeatableRead() throws Exception {
+        Isolation isolationLevel = Isolation.REPEATABLE_READ;
+
+        offerProcessRepository.saveAndFlush(createOfferProcess(OfferProcessStatus.OPEN));
+        OfferProcess offerToUpdate = offerProcessRepository.saveAndFlush(createOfferProcess(OfferProcessStatus.CANCELLED));
+        offerToUpdate.setStatus(OfferProcessStatus.OPEN);
+
+        ControllableOperation<OfferProcess> insertOperation = service.insertAndFlush(isolationLevel, createOfferProcess(OfferProcessStatus.OPEN));
+        ControllableOperation<OfferProcess> updateOperation = service.updateAndFlush(isolationLevel, offerToUpdate);
+        ControllableOperation<Set<OfferProcess>> findOperation = service.findByStatus(isolationLevel, OfferProcessStatus.OPEN, 3);
+
+        Set<OfferProcess> offerProcessList;
+
+        System.err.println("\n=== START ===\n");
+
+        findOperation.start();
+        insertOperation.start();
+        updateOperation.start();
+
+        // initial
+        System.err.println("\nSTART initialCount");
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("initialCount")
+                .isEqualTo(1);
+
+        // init update
+        System.err.println("\nSTART afterInitUpdateCount");
+        updateOperation.resume();
+
+        Future<?> findOperationResult = findOperation.resumeAsync();
+
+        assertThat(findOperationResult.isDone())
+                .describedAs("findOperationResult afterInitUpdateCount")
+                .isFalse();
+
+        // complete save operations
+        System.err.println("\nSTART afterCompleteSaveOperations");
+        insertOperation.complete();
+        updateOperation.complete();
+
+        offerProcessList = (Set<OfferProcess>)findOperationResult.get(500, TimeUnit.MILLISECONDS);
+        System.err.println("afterCompleteSaveOperations findResultCount: " + offerProcessList.size());
+        assertThat(offerProcessList.size()).describedAs("afterCompleteSaveOperations")
+                .isBetween(2, 3); // BECAUSE sometime MSSQL decides to unblock 'select' between operations
+
+        // complete find operation
+        offerProcessList = findOperation.complete();
+        assertThat(offerProcessList.size()).describedAs("afterCompleteFindOperations")
+                .isEqualTo(3); // LOL should be 2
+    }
+
+    @Test
+    @EnabledIf("isActiveProfileMssql")
+    public void performTest_onSerializable() throws Exception {
+        Isolation isolationLevel = Isolation.SERIALIZABLE;
+
+        offerProcessRepository.saveAndFlush(createOfferProcess(OfferProcessStatus.OPEN));
+        OfferProcess offerToUpdate = offerProcessRepository.saveAndFlush(createOfferProcess(OfferProcessStatus.CANCELLED));
+        offerToUpdate.setStatus(OfferProcessStatus.OPEN);
+
+        ControllableOperation<OfferProcess> insertOperation = service.insertAndFlush(isolationLevel, createOfferProcess(OfferProcessStatus.OPEN));
+        ControllableOperation<OfferProcess> updateOperation = service.updateAndFlush(isolationLevel, offerToUpdate);
+        ControllableOperation<Set<OfferProcess>> findOperation = service.findByStatus(isolationLevel, OfferProcessStatus.OPEN, 3);
+
+        Set<OfferProcess> offerProcessList;
+
+        System.err.println("\n=== START ===\n");
+
+        findOperation.start();
+        insertOperation.start();
+        updateOperation.start();
+
+        // initial
+        System.err.println("\nSTART initialCount");
+        offerProcessList = (Set<OfferProcess>)findOperation.resume();
+        assertThat(offerProcessList.size()).describedAs("initialCount")
+                .isEqualTo(1);
+
+        // init update
+        System.err.println("\nSTART afterInitUpdateCount");
+        updateOperation.resumeAsync();
+
+        Future<?> findOperationResult = findOperation.resumeAsync();
+
+        assertThat(findOperationResult.isDone())
+                .describedAs("findOperationResult afterInitUpdateCount")
+                .isFalse();
+
+        // complete save operations
+        System.err.println("\nSTART afterCompleteSaveOperations");
+        insertOperation.complete();
+        updateOperation.complete();
+
+        offerProcessList = (Set<OfferProcess>)findOperationResult.get(500, TimeUnit.MILLISECONDS);
+        System.err.println("afterCompleteSaveOperations findResultCount: " + offerProcessList.size());
+        assertThat(offerProcessList.size()).describedAs("afterCompleteSaveOperations")
+                .isBetween(2, 3); // BECAUSE sometime MSSQL decides to unblock 'select' between operations
+
+        // complete find operation
+        offerProcessList = findOperation.complete();
+        assertThat(offerProcessList.size()).describedAs("afterCompleteFindOperations")
+                .isEqualTo(3); // LOL should be 2
+    }
+
+    @Test
+    @EnabledIf("isActiveProfileMssql")
+    public void performTest_onSerializable2() {
         performTest(Isolation.SERIALIZABLE, 1, 1, 1,1, 1);
     }
 
