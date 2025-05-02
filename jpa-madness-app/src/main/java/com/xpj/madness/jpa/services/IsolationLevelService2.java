@@ -19,7 +19,8 @@ public class IsolationLevelService2 {
     private final TransactionalWrapper transactionalWrapper;
 
     public ControllableOperation<OfferProcess> listAndUpdate(Isolation isolationLevel, String idToUpdate) {
-        return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
+        return new ControllableOperation<>("listAndUpdate-" + isolationLevel,
+                (ctrl) -> transactionalWrapper.wrap(isolationLevel,
                 () -> {
                     OfferProcess offerProcess = (OfferProcess)ctrl.pauseBefore("listAndFind", () -> listAndFind(idToUpdate));
 
@@ -29,7 +30,7 @@ public class IsolationLevelService2 {
                         return sop;
                     });
 
-                    return (OfferProcess)ctrl.pauseBefore(() -> savedOfferProcess);
+                    return (OfferProcess)ctrl.pauseBefore("commit", () -> savedOfferProcess);
                 }));
     }
 
@@ -45,7 +46,8 @@ public class IsolationLevelService2 {
     }
 
     public ControllableOperation<List<OfferProcess>> updateStatuses(Isolation isolationLevel, OfferProcessStatus fromStatus, OfferProcessStatus toStatus) {
-        return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
+        return new ControllableOperation<>("updateStatuses-" + isolationLevel,
+                (ctrl) -> transactionalWrapper.wrap(isolationLevel,
                 () -> {
                     Set<OfferProcess> offersToUpdate = (Set<OfferProcess>)ctrl.pauseBefore("find from Status",
                             () -> offerProcessRepository.findByStatus(fromStatus));
@@ -60,12 +62,13 @@ public class IsolationLevelService2 {
                     ctrl.pauseBefore("updateExistingStatuses",
                             () -> offerProcessRepository.updateExistingStatuses(fromStatus, toStatus));
 
-                    return (List<OfferProcess>)ctrl.pauseBefore("finish updateStatuses", () -> new ArrayList(offersToUpdate));
+                    return (List<OfferProcess>)ctrl.pauseBefore("commit", () -> new ArrayList(offersToUpdate));
                 }));
     }
 
     public ControllableOperation<OfferProcess> insertAndFlush(Isolation isolationLevel, OfferProcess offerProcess) {
-        return new ControllableOperation<>((ctrl) -> transactionalWrapper.wrap(isolationLevel,
+        return new ControllableOperation<>("insertAndFlush-" + isolationLevel,
+                (ctrl) -> transactionalWrapper.wrap(isolationLevel,
                 () -> {
 //                    ctrl.pauseBefore("find from Status",
 //                            () -> offerProcessRepository.findByStatus(offerProcess.getStatus()));
@@ -73,7 +76,7 @@ public class IsolationLevelService2 {
                     OfferProcess savedOfferProcess = (OfferProcess)ctrl.pauseBefore("saveAndFlush", () ->
                         offerProcessRepository.saveAndFlush(offerProcess));
 
-                    return (OfferProcess)ctrl.pauseBefore(() -> savedOfferProcess);
+                    return (OfferProcess)ctrl.pauseBefore("commit", () -> savedOfferProcess);
                 }));
     }
 }

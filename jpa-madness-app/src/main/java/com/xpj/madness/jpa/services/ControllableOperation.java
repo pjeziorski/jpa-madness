@@ -9,18 +9,23 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Function;
 
-@RequiredArgsConstructor
 public class ControllableOperation<R> {
 
-    private final ExecutorService executor = Executors.newSingleThreadExecutor();
+    private final ExecutorService executor;
+
+    private final Function<ControllableOperation, R> operation;
 
     private AwaitResult<?> currentAwait;
     private CountDownLatch operationResultLock = new CountDownLatch(1);
     private R operationResult;
     private Throwable operationException;
 
-    private final Function<ControllableOperation, R> operation;
-
+    public ControllableOperation(String operationName,
+                                 Function<ControllableOperation, R> operation) {
+        this.executor = Executors.newSingleThreadExecutor(
+                (runnable) -> new Thread(runnable, "thread-" + operationName));
+        this.operation = operation;
+    }
 
     public ControllableOperation<R> start() {
         executor.submit(() -> {
@@ -40,22 +45,10 @@ public class ControllableOperation<R> {
     }
 
     // use only inside operation
-    public <T> T pauseBefore(Callable<T> subOperation) {
-        AwaitResult<T> await = new AwaitResult<>(subOperation);
+    public <T> T pauseBefore(String subOperationName, Callable<T> subOperation) {
+        AwaitResult<T> await = new AwaitResult<>(subOperationName, subOperation);
         currentAwait = await;
         return await.pause();
-    }
-
-    public <T> T pauseBefore(String message, Callable<T> subOperation) {
-        System.err.println(Thread.currentThread().getName() + " before " + message);
-        try {
-            AwaitResult<T> await = new AwaitResult<>(subOperation);
-            currentAwait = await;
-            return await.pause();
-        }
-        finally {
-            System.err.println(Thread.currentThread().getName() + " after " + message);
-        }
     }
 
     public boolean isPaused() {
@@ -104,24 +97,33 @@ public class ControllableOperation<R> {
         throw new RuntimeException("Timeout on waiting for operation action");
     }
 
-    class AwaitResult<SubOperationResult> {
+    static class AwaitResult<SubOperationResult> {
+        private final String subOperationName;
+        private final Callable<SubOperationResult> subOperation;
 
-        private CountDownLatch subOperationLock = new CountDownLatch(1);
-        private CountDownLatch resultLock = new CountDownLatch(1);
-        private Callable<SubOperationResult> subOperation;
+        private final CountDownLatch subOperationLock = new CountDownLatch(1);
+        private final CountDownLatch resultLock = new CountDownLatch(1);
+
         private boolean shouldThrowRuntimeException = false;
         private boolean shouldThrowException = false;
 
         private SubOperationResult result;
 
-        public AwaitResult(Callable<SubOperationResult> subOperation) {
+        private Throwable resultException;
+
+        public AwaitResult(
+                String subOperationName,
+                Callable<SubOperationResult> subOperation) {
+            this.subOperationName = subOperationName;
             this.subOperation = subOperation;
         }
 
         @SneakyThrows
         public SubOperationResult pause() {
+            log("before " + subOperationName);
             subOperationLock.await();
 
+            log("resume " + subOperationName);
             try {
                 if (shouldThrowRuntimeException) {
                     throw new RuntimeException();
@@ -134,10 +136,12 @@ public class ControllableOperation<R> {
                 return result;
             }
             catch (Throwable e) {
+                resultException = e;
                 e.printStackTrace();
                 throw e;
             }
             finally {
+                log("completed " + subOperationName);
                 resultLock.countDown();
             }
         }
@@ -151,6 +155,10 @@ public class ControllableOperation<R> {
 
         public void resumeAsync() {
             subOperationLock.countDown();
+        }
+
+        private void log(String message) {
+            System.err.println(Thread.currentThread().getName() + " " + message);
         }
 
     }
