@@ -2,6 +2,8 @@ package com.xpj.madness.jpa.utils;
 
 import lombok.SneakyThrows;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.*;
 import java.util.function.Function;
 
@@ -60,7 +62,7 @@ public class ControllableOperation<R> {
         return result;
     }
 
-    public Future<Object> resumeAsync() {
+    public Future<?> resumeAsync() {
         AwaitResult await = currentAwait;
         currentAwait = null;
         return await.resumeAsync();
@@ -92,7 +94,7 @@ public class ControllableOperation<R> {
         throw new RuntimeException("Timeout on waiting for operation action");
     }
 
-    static class AwaitResult<SubOperationResult> {
+    class AwaitResult<SubOperationResult> {
         private final String subOperationName;
         private final Callable<SubOperationResult> subOperation;
 
@@ -153,11 +155,20 @@ public class ControllableOperation<R> {
         }
 
         public Future<SubOperationResult> resumeAsync() {
-            return Executors.newSingleThreadExecutor().submit(() -> resume());
+            Future<SubOperationResult> futureResult = Executors.newSingleThreadExecutor().submit(() -> resume());
+            try {
+                Thread.sleep(300);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            return futureResult;
         }
 
         private void log(String message) {
-            System.err.println(Thread.currentThread().getName() + " " + message);
+            System.err.println(
+                    LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME)
+                    + " " + Thread.currentThread().getName()
+                            + " " + message);
         }
 
     }
