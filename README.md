@@ -10,8 +10,8 @@ It is to test various JPA mechanisms using Spring Boot
 
 - Dirty Reads - reading uncommitted rows
 - Lost Update - When changes of one transaction are not visible in other transaction
-- Repeatable Read - while reading same row twice, the data change after transaction start
-- Phantom Read - while making same query twice, new row appear after transaction start
+- Repeatable Read - while reading same row twice, the data change
+- Phantom Read - while making same query twice, new row appear
 
 | Occurrence       | Dirty Reads | Lost Update | Repat. Read | Phantom Read |
 |------------------|-------------|-------------|-------------|--------------|

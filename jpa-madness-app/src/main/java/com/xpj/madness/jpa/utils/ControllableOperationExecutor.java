@@ -30,6 +30,13 @@ public class ControllableOperationExecutor {
                 else {
                     allOperationsAwaitingCount = 0;
                 }
+                if (allOperationsAwaitingCount == MAX_AWAITING_COUNT) {
+                    try {
+                        Thread.sleep(5000);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
 
                 if (allOperationsAwaitingCount > MAX_AWAITING_COUNT) {
                     throw new RuntimeException("Possible deadlock: All operations are awaiting.");
