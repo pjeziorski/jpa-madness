@@ -38,4 +38,68 @@ public class SingleOpenOfferService {
         );
     }
 
+    public ControllableOperation<OfferProcess> insertNewWithSingleUpdate(Isolation isolationLevel, OfferProcess offerProcess) {
+        return new ControllableOperation<>(
+                "insertNewWithSingleUpdate",
+                (ctrl) -> transactionalWrapper.wrap(isolationLevel,
+                        () -> {
+                            ctrl.pauseBefore("updateExistingStatuses",
+                                    () -> offerProcessRepository.updateExistingStatuses(OfferProcessStatus.OPEN, OfferProcessStatus.CANCELLED));
+
+                            OfferProcess savedOfferProcess = ctrl.pauseBefore("saveNewOfferProcess",
+                                    () -> offerProcessRepository.saveAndFlush(offerProcess));
+
+                            return ctrl.pauseBefore("commit", () -> savedOfferProcess);
+                        })
+        );
+    }
+
+    public ControllableOperation<OfferProcess> insertNewWithSeparateTransactions(Isolation isolationLevel, OfferProcess offerProcess) {
+        return new ControllableOperation<>(
+                "insertNewWithSeparateTransactions",
+                (ctrl) -> {
+                    OfferProcess savedOfferProcess = ctrl.pauseBefore("saveNewOfferProcess",
+                            () -> offerProcessRepository.saveAndFlush(offerProcess));
+
+                    transactionalWrapper.wrap(isolationLevel,
+                            () -> {
+                                Set<OfferProcess> openOfferProcesses = ctrl.pauseBefore("findOpenProcesses",
+                                        () -> offerProcessRepository.findByStatusWithLock(OfferProcessStatus.OPEN));
+
+                                openOfferProcesses.removeIf(op -> op.getId().equals(savedOfferProcess.getId()));
+                                openOfferProcesses.forEach(op -> op.setStatus(OfferProcessStatus.CLOSED));
+
+                                ctrl.pauseBefore("updateOpenProcesses",
+                                        () -> offerProcessRepository.saveAllAndFlush(openOfferProcesses));
+
+                                return ctrl.pauseBefore("commit", () -> savedOfferProcess);
+                            });
+
+                    return savedOfferProcess;
+                }
+        );
+
+    }
+
+    public ControllableOperation<OfferProcess> insertNewWithSeparateTransactionsAndSingleUpdate(Isolation isolationLevel, OfferProcess offerProcess) {
+        return new ControllableOperation<>(
+                "insertNewWithSeparateTransactionsAndSingleUpdate",
+                (ctrl) -> {
+                    OfferProcess savedOfferProcess = ctrl.pauseBefore("saveNewOfferProcess",
+                            () -> offerProcessRepository.saveAndFlush(offerProcess));
+
+                    transactionalWrapper.wrap(isolationLevel,
+                            () -> {
+                                ctrl.pauseBefore("",
+                                        () -> offerProcessRepository.updateExistingStatusesExcluding(
+                                                OfferProcessStatus.OPEN, OfferProcessStatus.CLOSED, savedOfferProcess.getId()));
+
+                                return ctrl.pauseBefore("commit", () -> savedOfferProcess);
+                            });
+
+                    return savedOfferProcess;
+                }
+        );
+    }
+
 }

@@ -31,7 +31,7 @@ public class SingleOpenOfferTest {
 
     @Test
     public void performTestOnEmptyDatabase() {
-        performTestOnEmptyDatabase(Isolation.SERIALIZABLE);
+        performTestOnEmptyDatabase(Isolation.REPEATABLE_READ);
     }
 
     @BeforeEach
@@ -40,8 +40,8 @@ public class SingleOpenOfferTest {
     }
 
     private void performTestOnEmptyDatabase(Isolation isolationLevel) {
-        ControllableOperation<OfferProcess> insertNew1 = singleOpenOfferService.insertNew(isolationLevel, createOfferProcess(OfferProcessStatus.OPEN));
-        ControllableOperation<OfferProcess> insertNew2 = singleOpenOfferService.insertNew(isolationLevel, createOfferProcess(OfferProcessStatus.OPEN));
+        ControllableOperation<OfferProcess> insertNew1 = singleOpenOfferService.insertNewWithSeparateTransactions(isolationLevel, createOfferProcess(OfferProcessStatus.OPEN));
+        ControllableOperation<OfferProcess> insertNew2 = singleOpenOfferService.insertNewWithSeparateTransactions(isolationLevel, createOfferProcess(OfferProcessStatus.OPEN));
 
         insertNew1.start();
         insertNew2.start();
