@@ -34,6 +34,13 @@ REMOVE:
 - Postgres for Serializable needs SELECT on same table
 - MSSQL Serializable actually orders and blocks transactions
 
+### Unit Testing
+
+In case you want to test multiple transactions insied single unit test and you expect to run them independently,
+you need to add annotation @Transactional(propagation = Propagation.NOT_SUPPORTED)
+See: https://stackoverflow.com/questions/27987097/disabling-transaction-on-spring-testing-test-method
+
+See: UnitTestsTransactionsTest
 
 ## Tools
 

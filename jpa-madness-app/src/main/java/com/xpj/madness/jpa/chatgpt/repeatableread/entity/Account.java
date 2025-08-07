@@ -2,8 +2,10 @@ package com.xpj.madness.jpa.chatgpt.repeatableread.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Entity
+@Entity(name = "chatgpt_account")
+@Table(name = "chatgpt_account")
 public class Account {
     @Id
     private Integer id;

@@ -7,3 +7,5 @@ tmp/
 .project
 *.iml
 *.db
+
+jpa-madness-app/src/main/resources/local-config.properties
