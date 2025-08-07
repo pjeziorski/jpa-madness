@@ -1,0 +1,5 @@
+CREATE TABLE uc1_article (
+    id VARCHAR(255) NOT NULL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    content TEXT NOT NULL
+)

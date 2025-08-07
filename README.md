@@ -2,6 +2,15 @@
 
 It is to test various JPA mechanisms using Spring Boot
 
+## How to Run
+
+It is mainly a collection of Unit Tests that are proving different mechanisms of JPA.  
+
+In order to run it, you need to:
+- go to jpa-madness-app/main/resources
+- copy local-config-template.properties to local-config.properties
+- configure local-config.properties according to your needs
+
 ## Learnings
 
 ### Isolation Levels
