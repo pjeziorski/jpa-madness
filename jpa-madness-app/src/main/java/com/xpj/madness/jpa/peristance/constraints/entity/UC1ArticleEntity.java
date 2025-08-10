@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.peristance.flush.entity;
+package com.xpj.madness.jpa.peristance.constraints.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
