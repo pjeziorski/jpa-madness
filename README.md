@@ -13,6 +13,15 @@ In order to run it, you need to:
 
 ## Learnings
 
+### Save vs SaveAndFlush
+
+- save() writes to database at the commit of the transaction
+- saveAndFlush() writes to database immediately but does commit the transaction
+- because saveAndFlush() writes to database, it validates database constraints
+
+References:
+- persistance.contraints
+
 ### Isolation Levels
 
 #### Anomalies:

@@ -7,4 +7,14 @@
                 relativeToChangelogFile="true"
                 />
     </changeSet>
+    <changeSet id="uc2" author="jpa-madness">
+        <createTable tableName="uc2_city">
+            <column name="id" type="varchar(255)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

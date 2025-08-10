@@ -94,7 +94,6 @@ public class ConstraintsTest {
         // validate both entities
         assertThatExceptionOfType(DataIntegrityViolationException.class)
                 .isThrownBy(() -> articleEntityRepository.saveAndFlush(validArticle));
-
     }
 
     @Test
@@ -118,7 +117,6 @@ public class ConstraintsTest {
         List<UC1ArticleEntity> articles = articleEntityRepository.findAllById(List.of(article1.getId(), article2.getId()));
 
         assertThat(articles.size()).isEqualTo(2);
-
     }
 
 }
