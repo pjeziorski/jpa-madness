@@ -23,4 +23,12 @@ public class UC3User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Collection<UC3UserAddress> addresses;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Collection<UC3UserCoupon> userCoupons;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Collection<UC3GenericCoupon> genericCoupons;
+
 }

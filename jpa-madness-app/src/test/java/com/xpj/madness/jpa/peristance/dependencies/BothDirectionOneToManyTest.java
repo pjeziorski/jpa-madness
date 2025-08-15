@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // all tests are not wrapped in single transaction
 @Import(AdHocTransaction.class)
-public class SingleDependencyTest {
+public class BothDirectionOneToManyTest {
 
     @Autowired
     private UC3UserRepository uc3UserRepository;
@@ -31,7 +31,7 @@ public class SingleDependencyTest {
     private AdHocTransaction adHocTransaction;
 
     @Test
-    public void shouldSave_userWithNewAddresses() {
+    public void shouldSaveUser_withNewAddresses() {
         // given
         UC3User user = UC3User.builder()
                 .name("user_1")
@@ -60,7 +60,7 @@ public class SingleDependencyTest {
     }
 
     @Test
-    public void shouldNotSave_userWithNewAddresses_whenAddressReferencesAreNotSet() {
+    public void shouldNotSaveUser_withNewAddresses_whenAddressReferencesAreNotSet() {
         // given
         UC3User user = UC3User.builder()
                 .name("user_1")
