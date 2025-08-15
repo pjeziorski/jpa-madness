@@ -8,6 +8,7 @@
                 />
     </changeSet>
     <changeSet id="uc2" author="jpa-madness">
+        <comment>Create UC2 tables</comment>
         <createTable tableName="uc2_city">
             <column name="id" type="varchar(255)">
                 <constraints primaryKey="true" nullable="false"/>
@@ -16,5 +17,12 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="uc3" author="jpa-madness" runAlways="true">
+        <comment>Create UC3 tables</comment>
+        <sqlFile
+                path="sql/uc3_tables.sql"
+                relativeToChangelogFile="true"
+        />
     </changeSet>
 </databaseChangeLog>
