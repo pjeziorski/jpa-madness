@@ -14,7 +14,7 @@ CREATE TABLE uc3_user (
 CREATE TABLE uc3_user_address (
     id BIGINT NOT NULL PRIMARY KEY,
     city VARCHAR(255) NOT NULL,
-    user_id VARCHAR(36) NULL,
+    user_id VARCHAR(36) NOT NULL,
     CONSTRAINT fk_uc3_user_address_user FOREIGN KEY (user_id)
         REFERENCES uc3_user(id)
 );

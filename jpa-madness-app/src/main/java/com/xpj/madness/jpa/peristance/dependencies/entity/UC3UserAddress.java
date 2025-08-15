@@ -1,16 +1,16 @@
 package com.xpj.madness.jpa.peristance.dependencies.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Data
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
+@Setter
+@Getter
+@EqualsAndHashCode(exclude = "user")
+@ToString(exclude = "user")
+@Entity
 @Table(name = "uc3_user_address")
 public class UC3UserAddress {
 
