@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.repositories;
+package com.xpj.madness.jpa.legacy;
 
 import com.xpj.madness.jpa.legacy.repositories.NewsRepository;
 import com.xpj.madness.jpa.legacy.services.NewsService;

@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.repositories;
+package com.xpj.madness.jpa.legacy;
 
 import com.xpj.madness.jpa.legacy.repositories.NewsEntityManagerLogicRepository;
 import org.junit.jupiter.api.BeforeEach;

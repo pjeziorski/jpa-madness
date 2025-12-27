@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.repositories;
+package com.xpj.madness.jpa.legacy;
 
 import com.xpj.madness.jpa.legacy.entities.OfferProcess;
 import com.xpj.madness.jpa.legacy.entities.OfferProcessStatus;
