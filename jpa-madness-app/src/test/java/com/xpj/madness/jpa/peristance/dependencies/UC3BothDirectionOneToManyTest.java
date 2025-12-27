@@ -183,4 +183,85 @@ public class UC3BothDirectionOneToManyTest {
         assertThatExceptionOfType(DataIntegrityViolationException.class)
                 .isThrownBy(() -> uc3UserAddressRepository.saveAndFlush(userAddress));
     }
+
+    @Test
+    public void shouldSaveUser_withAdditionalAddresses() {
+        // given
+        UC3User savedUser = adHocTransaction.readCommitted(() -> {
+            UC3User user = UC3User.builder()
+                    .name("user_1")
+                    .addresses(List.of(
+                            UC3UserAddress.builder()
+                                    .city("city_1")
+                                    .build()
+                    ))
+                    .build();
+            user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
+
+            return uc3UserRepository.saveAndFlush(user);
+        });
+
+        long initialQueryCount = hibernateStatistics.getQueryCount();
+        System.out.println("Before when query count: " + initialQueryCount);
+
+        // when, then
+        adHocTransaction.readCommitted(() -> {
+            UC3User user = uc3UserRepository.findById(savedUser.getId()).get();
+            user.getAddresses().add(UC3UserAddress.builder()
+                    .city("city_2")
+                    .user(user)
+                    .build());
+
+            uc3UserRepository.saveAndFlush(user);
+
+            // 1 select user (don't know why...)
+            // 1 insert of address
+            assertThat(hibernateStatistics.getQueryCount())
+                    .isEqualTo(initialQueryCount + 2);
+        });
+    }
+
+    @Test
+    public void shouldSaveUser_withAdditionalAddresses_outsideTransaction() {
+        // given
+        UC3User savedUser = adHocTransaction.readCommitted(() -> {
+            UC3User user = UC3User.builder()
+                    .name("user_1")
+                    .addresses(List.of(
+                            UC3UserAddress.builder()
+                                    .city("city_1")
+                                    .build()
+                    ))
+                    .build();
+            user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
+
+            return uc3UserRepository.saveAndFlush(user);
+        });
+
+        UC3User foundUser = adHocTransaction.readCommitted(() -> {
+            UC3User user = uc3UserRepository.findById(savedUser.getId()).get();
+            user.getAddresses().size(); // init lazy loading
+
+            return user;
+        });
+
+        foundUser.getAddresses().add(UC3UserAddress.builder()
+                        .city("city_2")
+                        .user(foundUser)
+                        .build());
+
+        long initialQueryCount = hibernateStatistics.getQueryCount();
+        System.out.println("Before when query count: " + initialQueryCount);
+
+        // when
+        uc3UserRepository.saveAndFlush(foundUser);
+
+        // then
+        // 1 select address joined user
+        // 1select coupons
+        // 1 select generic coupons
+        // 1 insert of address
+        assertThat(hibernateStatistics.getQueryCount())
+                .isEqualTo(initialQueryCount + 4);
+    }
 }
