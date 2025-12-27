@@ -50,9 +50,19 @@ public class UC3BothDirectionOneToManyTest {
         // when
         UC3User savedUser = uc3UserRepository.saveAndFlush(user);
 
+        assertThat(savedUser.getUserCoupons()).isNull();
+        assertThat(savedUser.getGenericCoupons()).isNull();
+
         // then
         adHocTransaction.readCommitted(() -> {
             UC3User foundUser = uc3UserRepository.findById(savedUser.getId()).get();
+
+            assertThat(foundUser.getUserCoupons()).isEmpty();
+            assertThat(foundUser.getGenericCoupons()).isEmpty();
+
+            // to compare all fields
+            savedUser.setUserCoupons(List.of());
+            savedUser.setGenericCoupons(List.of());
 
             assertThat(foundUser).isNotSameAs(savedUser);
             assertThat(foundUser).usingRecursiveComparison().isEqualTo(savedUser);

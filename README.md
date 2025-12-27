@@ -25,6 +25,19 @@ In order to run it, you need to:
 ### UC3: One to Many Dependencies Tests
 
 - Tests saving One to Many Dependencies with different directions
+- TODO: Check Use Cases
+
+### UC4: One to One Dependencies Tests
+
+TODO
+
+### UC5: Many to Many Dependencies Tests
+
+TODO
+
+### UC6: Eager Dependencies Tests
+
+
 
 ## Learnings
 
