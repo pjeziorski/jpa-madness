@@ -17,6 +17,11 @@ In order to run it, you need to:
 
 - Tests constraints (like not null) on database and on hibernate level
 
+### UC2: Entity References Tests
+
+- Tests what references are returned on hibernate methods
+- Liquibase create via xml
+
 ## Learnings
 
 ### Save vs SaveAndFlush

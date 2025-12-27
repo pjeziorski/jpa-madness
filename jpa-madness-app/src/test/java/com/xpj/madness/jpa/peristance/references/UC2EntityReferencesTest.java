@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
-public class EntityReferencesTest {
+public class UC2EntityReferencesTest {
 
     @Autowired
     UC2CityEntityRepository cityEntityRepository;
