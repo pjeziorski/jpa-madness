@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
-public class ConstraintsTest {
+public class UC1ConstraintsTest {
 
     @Autowired
     private UC1ArticleEntityRepository articleEntityRepository;

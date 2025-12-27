@@ -11,6 +11,12 @@ In order to run it, you need to:
 - copy local-config-template.properties to local-config.properties
 - configure local-config.properties according to your needs
 
+## Use Cases
+
+#### UC1: Constraints Tests
+
+- Tests constraints (like not null) on database and on hibernate level
+
 ## Learnings
 
 ### Save vs SaveAndFlush
