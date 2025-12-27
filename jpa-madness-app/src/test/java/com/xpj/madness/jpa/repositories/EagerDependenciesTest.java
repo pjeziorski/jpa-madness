@@ -2,7 +2,7 @@ package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.entities.Basket;
 import com.xpj.madness.jpa.entities.BasketItem;
-import com.xpj.madness.jpa.services.HibernateStatistics;
+import com.xpj.madness.jpa.utils.HibernateStatistics;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

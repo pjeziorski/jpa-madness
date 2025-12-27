@@ -73,23 +73,4 @@ public class UC3SingleDirectionOneToManyTest {
         });
     }
 
-    @Test
-    public void shouldNotSaveUser_withNewAddresses_whenAddressReferencesAreNotSet() {
-        // given
-        UC3User user = UC3User.builder()
-                .name("user_1")
-                .addresses(List.of(
-                        UC3UserAddress.builder()
-                                .city("city_1")
-                                .build(),
-                        UC3UserAddress.builder()
-                                .city("city_2")
-                                .build()
-                ))
-                .build();
-
-        // when
-        assertThatExceptionOfType(DataIntegrityViolationException.class)
-                .isThrownBy(() -> uc3UserRepository.saveAndFlush(user));
-    }
 }

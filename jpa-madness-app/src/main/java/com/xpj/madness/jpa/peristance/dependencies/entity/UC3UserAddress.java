@@ -17,10 +17,10 @@ public class UC3UserAddress {
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "uc3_user_address_sequence"
+            generator = "uc3_user_address_sequence_generator"
     )
     @SequenceGenerator(
-            name = "uc3_user_address_sequence",
+            name = "uc3_user_address_sequence_generator",
             sequenceName = "uc3_seq_user_address",
             allocationSize = 30
     )

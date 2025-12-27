@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.services;
+package com.xpj.madness.jpa.utils;
 
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;

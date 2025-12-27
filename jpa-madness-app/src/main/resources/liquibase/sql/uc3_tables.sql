@@ -5,7 +5,7 @@ DROP TABLE IF EXISTS uc3_user;
 DROP SEQUENCE IF EXISTS uc3_seq_user_address;
 
 CREATE SEQUENCE uc3_seq_user_address
-    START WITH 1
+    START WITH 30
     INCREMENT BY 30;
 
 CREATE TABLE uc3_user (

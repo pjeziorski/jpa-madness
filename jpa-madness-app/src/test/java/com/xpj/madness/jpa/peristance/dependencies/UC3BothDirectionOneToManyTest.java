@@ -4,6 +4,9 @@ import com.xpj.madness.jpa.peristance.dependencies.entity.UC3User;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC3UserAddress;
 import com.xpj.madness.jpa.peristance.dependencies.repository.UC3UserRepository;
 import com.xpj.madness.jpa.utils.AdHocTransaction;
+import com.xpj.madness.jpa.utils.HibernateStatistics;
+import jakarta.annotation.PostConstruct;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -21,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // all tests are not wrapped in single transaction
-@Import(AdHocTransaction.class)
+@Import({AdHocTransaction.class, HibernateStatistics.class})
 public class UC3BothDirectionOneToManyTest {
 
     @Autowired
@@ -30,8 +33,34 @@ public class UC3BothDirectionOneToManyTest {
     @Autowired
     private AdHocTransaction adHocTransaction;
 
+    @Autowired
+    private HibernateStatistics hibernateStatistics;
+
+    @PostConstruct
+    public void prepareDatabase() {
+        // initialize sequences
+        UC3User user = UC3User.builder()
+                .name("user_0")
+                .addresses(List.of(
+                        UC3UserAddress.builder()
+                                .city("city_0")
+                                .build())
+                )
+                .build();
+        user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
+
+        uc3UserRepository.saveAndFlush(user);
+    }
+
+    @BeforeEach
+    public void beforeEach() {
+        System.out.println("Initial query count: " + hibernateStatistics.getQueryCount());
+    }
+
     @Test
     public void shouldSaveUser_withNewAddresses() {
+        long initialQueryCount = hibernateStatistics.getQueryCount();
+
         // given
         UC3User user = UC3User.builder()
                 .name("user_1")
@@ -45,15 +74,21 @@ public class UC3BothDirectionOneToManyTest {
                 ))
                 .build();
 
+        // important assignment
         user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
 
         // when
         UC3User savedUser = uc3UserRepository.saveAndFlush(user);
 
+        // then
+        // 1 insert of User + 2 insert of address
+        assertThat(hibernateStatistics.getQueryCount())
+                .isEqualTo(initialQueryCount + 3);
+
         assertThat(savedUser.getUserCoupons()).isNull();
         assertThat(savedUser.getGenericCoupons()).isNull();
 
-        // then
+
         adHocTransaction.readCommitted(() -> {
             UC3User foundUser = uc3UserRepository.findById(savedUser.getId()).get();
 
