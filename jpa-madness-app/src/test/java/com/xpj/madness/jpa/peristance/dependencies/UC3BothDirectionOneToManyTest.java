@@ -2,6 +2,7 @@ package com.xpj.madness.jpa.peristance.dependencies;
 
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC3User;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC3UserAddress;
+import com.xpj.madness.jpa.peristance.dependencies.repository.UC3UserAddressRepository;
 import com.xpj.madness.jpa.peristance.dependencies.repository.UC3UserRepository;
 import com.xpj.madness.jpa.utils.AdHocTransaction;
 import com.xpj.madness.jpa.utils.HibernateStatistics;
@@ -18,8 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
@@ -29,6 +29,9 @@ public class UC3BothDirectionOneToManyTest {
 
     @Autowired
     private UC3UserRepository uc3UserRepository;
+    
+    @Autowired
+    private UC3UserAddressRepository uc3UserAddressRepository;
 
     @Autowired
     private AdHocTransaction adHocTransaction;
@@ -122,5 +125,50 @@ public class UC3BothDirectionOneToManyTest {
         // when
         assertThatExceptionOfType(DataIntegrityViolationException.class)
                 .isThrownBy(() -> uc3UserRepository.saveAndFlush(user));
+    }
+    
+    @Test
+    public void shouldAllowSaveAddress_withMinimumUser() {
+        // given
+        UC3User initUser = UC3User.builder()
+                .name("user_3")
+                .build();
+
+        initUser = uc3UserRepository.saveAndFlush(initUser);
+        
+        assertThat(initUser.getId()).isNotNull();
+
+        UC3User minimumUser = UC3User.builder()
+                                .id(initUser.getId())
+                                .build();
+
+        UC3UserAddress userAddress = UC3UserAddress.builder()
+                .city("city_5")
+                .user(minimumUser)
+                .build();
+
+        // when
+        userAddress = uc3UserAddressRepository.saveAndFlush(userAddress);
+        
+        // then
+        UC3User expectedUser = UC3User.builder()
+                .id(initUser.getId())
+                .name("user_3")
+                .addresses(List.of(UC3UserAddress.builder()
+                                .id(userAddress.getId())
+                                .city("city_5")
+                                .build())
+                )
+                .userCoupons(List.of())
+                .genericCoupons(List.of())
+                .build();
+
+        expectedUser.getAddresses().forEach(userAddrr -> userAddrr.setUser(expectedUser));
+
+        adHocTransaction.readCommitted(() -> {
+            UC3User foundUser = uc3UserRepository.findById(expectedUser.getId()).get();
+
+            assertThat(foundUser).usingRecursiveComparison().isEqualTo(expectedUser);
+        });
     }
 }
