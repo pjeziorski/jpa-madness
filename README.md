@@ -22,6 +22,10 @@ In order to run it, you need to:
 - Tests what references are returned on hibernate methods
 - Liquibase create via xml
 
+### UC3: One to Many Dependencies Tests
+
+- Tests saving One to Many Dependencies with different directions
+
 ## Learnings
 
 ### Save vs SaveAndFlush

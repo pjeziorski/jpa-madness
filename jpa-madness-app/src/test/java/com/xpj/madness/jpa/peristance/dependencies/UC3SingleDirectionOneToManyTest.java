@@ -3,7 +3,6 @@ package com.xpj.madness.jpa.peristance.dependencies;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC3GenericCoupon;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC3User;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC3UserAddress;
-import com.xpj.madness.jpa.peristance.dependencies.entity.UC3UserCoupon;
 import com.xpj.madness.jpa.peristance.dependencies.repository.UC3UserRepository;
 import com.xpj.madness.jpa.utils.AdHocTransaction;
 import org.junit.jupiter.api.Test;
@@ -24,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // all tests are not wrapped in single transaction
 @Import(AdHocTransaction.class)
-public class SingleDirectionOneToManyTest {
+public class UC3SingleDirectionOneToManyTest {
 
     @Autowired
     private UC3UserRepository uc3UserRepository;

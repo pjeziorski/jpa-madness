@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // all tests are not wrapped in single transaction
 @Import(AdHocTransaction.class)
-public class BothDirectionOneToManyTest {
+public class UC3BothDirectionOneToManyTest {
 
     @Autowired
     private UC3UserRepository uc3UserRepository;
