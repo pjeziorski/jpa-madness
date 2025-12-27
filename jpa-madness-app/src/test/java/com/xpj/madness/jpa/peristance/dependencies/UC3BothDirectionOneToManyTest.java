@@ -122,7 +122,7 @@ public class UC3BothDirectionOneToManyTest {
                 ))
                 .build();
 
-        // when
+        // when, then
         assertThatExceptionOfType(DataIntegrityViolationException.class)
                 .isThrownBy(() -> uc3UserRepository.saveAndFlush(user));
     }
@@ -170,5 +170,17 @@ public class UC3BothDirectionOneToManyTest {
 
             assertThat(foundUser).usingRecursiveComparison().isEqualTo(expectedUser);
         });
+    }
+
+    @Test
+    public void shouldNotAllowSaveAddress_withoutUser() {
+        // given
+        UC3UserAddress userAddress = UC3UserAddress.builder()
+                .city("city_5")
+                .build();
+
+        // when, then
+        assertThatExceptionOfType(DataIntegrityViolationException.class)
+                .isThrownBy(() -> uc3UserAddressRepository.saveAndFlush(userAddress));
     }
 }
