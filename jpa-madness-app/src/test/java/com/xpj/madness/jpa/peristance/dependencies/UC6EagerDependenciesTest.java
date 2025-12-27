@@ -1,6 +1,5 @@
 package com.xpj.madness.jpa.peristance.dependencies;
 
-import com.xpj.madness.jpa.entities.Basket;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC6Basket;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC6BasketCoupon;
 import com.xpj.madness.jpa.peristance.dependencies.entity.UC6BasketItem;

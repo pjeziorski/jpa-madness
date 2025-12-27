@@ -1,7 +1,8 @@
 package com.xpj.madness.jpa.repositories;
 
-import com.xpj.madness.jpa.services.NestedTransactionsService;
-import com.xpj.madness.jpa.services.NestedTransactionsSubService;
+import com.xpj.madness.jpa.legacy.repositories.NewsRepository;
+import com.xpj.madness.jpa.legacy.services.NestedTransactionsService;
+import com.xpj.madness.jpa.legacy.services.NestedTransactionsSubService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @ActiveProfiles("legacy")
-@ComponentScan("com.xpj.madness.jpa.services")
+@ComponentScan("com.xpj.madness.jpa.legacy.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 public class NestedTransactionsTest {

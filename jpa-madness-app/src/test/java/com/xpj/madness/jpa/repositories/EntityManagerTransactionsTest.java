@@ -1,5 +1,6 @@
 package com.xpj.madness.jpa.repositories;
 
+import com.xpj.madness.jpa.legacy.repositories.NewsEntityManagerLogicRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,11 +1,12 @@
 package com.xpj.madness.jpa.repositories;
 
-import com.xpj.madness.jpa.entities.Basket;
+import com.xpj.madness.jpa.legacy.entities.Basket;
+import com.xpj.madness.jpa.legacy.repositories.BasketRepository;
+import com.xpj.madness.jpa.legacy.repositories.NewsRepository;
 import com.xpj.madness.jpa.utils.HibernateStatistics;
-import com.xpj.madness.jpa.services.NestedTransactionsService;
-import com.xpj.madness.jpa.services.NestedTransactionsSubService;
+import com.xpj.madness.jpa.legacy.services.NestedTransactionsService;
+import com.xpj.madness.jpa.legacy.services.NestedTransactionsSubService;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -21,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @ActiveProfiles("legacy")
-@ComponentScan("com.xpj.madness.jpa.services")
+@ComponentScan("com.xpj.madness.jpa.legacy.services")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Import(HibernateStatistics.class)
 public class UnitTestsTransactionsTest {

@@ -1,6 +1,7 @@
 package com.xpj.madness.jpa.repositories;
 
-import com.xpj.madness.jpa.entities.Article;
+import com.xpj.madness.jpa.legacy.entities.Article;
+import com.xpj.madness.jpa.legacy.repositories.ArticleRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;

@@ -1,9 +1,10 @@
 package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.RuntimeExceptionWrapper;
-import com.xpj.madness.jpa.entities.OfferProcess;
-import com.xpj.madness.jpa.entities.OfferProcessStatus;
-import com.xpj.madness.jpa.services.DeadlockOperationService;
+import com.xpj.madness.jpa.legacy.entities.OfferProcess;
+import com.xpj.madness.jpa.legacy.entities.OfferProcessStatus;
+import com.xpj.madness.jpa.legacy.repositories.OfferProcessRepository;
+import com.xpj.madness.jpa.legacy.services.DeadlockOperationService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @ActiveProfiles("legacy")
-@ComponentScan("com.xpj.madness.jpa.services")
+@ComponentScan("com.xpj.madness.jpa.legacy.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 public class DeadlockOperationTest {

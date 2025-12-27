@@ -1,8 +1,8 @@
 package com.xpj.madness.jpa.repositories;
 
-import com.xpj.madness.jpa.entities.BasketWithGraph;
-import com.xpj.madness.jpa.entities.BasketWithGraphItem;
-import com.xpj.madness.jpa.services.BasketWithGraphService;
+import com.xpj.madness.jpa.legacy.entities.BasketWithGraph;
+import com.xpj.madness.jpa.legacy.entities.BasketWithGraphItem;
+import com.xpj.madness.jpa.legacy.services.BasketWithGraphService;
 import com.xpj.madness.jpa.utils.HibernateStatistics;
 import org.hibernate.LazyInitializationException;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,7 +23,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @ActiveProfiles("legacy")
-@ComponentScan("com.xpj.madness.jpa.services")
+@ComponentScan("com.xpj.madness.jpa.legacy.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Import(HibernateStatistics.class)

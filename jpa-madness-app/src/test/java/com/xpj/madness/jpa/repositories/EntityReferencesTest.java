@@ -1,8 +1,9 @@
 package com.xpj.madness.jpa.repositories;
 
 import com.xpj.madness.jpa.TestUtils;
-import com.xpj.madness.jpa.entities.News;
-import com.xpj.madness.jpa.services.EnforcedTransactionsNewsService;
+import com.xpj.madness.jpa.legacy.entities.News;
+import com.xpj.madness.jpa.legacy.repositories.NewsRepository;
+import com.xpj.madness.jpa.legacy.services.EnforcedTransactionsNewsService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @Deprecated
 @DataJpaTest
 @ActiveProfiles("legacy")
-@ComponentScan("com.xpj.madness.jpa.services")
+@ComponentScan("com.xpj.madness.jpa.legacy.services")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 class EntityReferencesTest {
 

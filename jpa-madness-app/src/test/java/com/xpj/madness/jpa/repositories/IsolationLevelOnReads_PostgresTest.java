@@ -1,9 +1,10 @@
 package com.xpj.madness.jpa.repositories;
 
-import com.xpj.madness.jpa.entities.OfferProcess;
-import com.xpj.madness.jpa.entities.OfferProcessStatus;
-import com.xpj.madness.jpa.services.ActiveProfileService;
-import com.xpj.madness.jpa.services.IsolationLevelOnReadsService;
+import com.xpj.madness.jpa.legacy.entities.OfferProcess;
+import com.xpj.madness.jpa.legacy.entities.OfferProcessStatus;
+import com.xpj.madness.jpa.legacy.repositories.OfferProcessRepository;
+import com.xpj.madness.jpa.legacy.services.ActiveProfileService;
+import com.xpj.madness.jpa.legacy.services.IsolationLevelOnReadsService;
 import com.xpj.madness.jpa.utils.ControllableOperation;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Set;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("legacy")
-@ComponentScan("com.xpj.madness.jpa.services")
+@ComponentScan("com.xpj.madness.jpa.legacy.services")
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // see UnitTestsTransactionsTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 public class IsolationLevelOnReads_PostgresTest {

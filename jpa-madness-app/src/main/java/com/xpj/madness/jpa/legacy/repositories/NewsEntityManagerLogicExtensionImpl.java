@@ -1,0 +1,77 @@
+package com.xpj.madness.jpa.legacy.repositories;
+
+import com.xpj.madness.jpa.legacy.entities.News;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+public class NewsEntityManagerLogicExtensionImpl implements NewsEntityManagerLogicExtension {
+
+    private final EntityManager entityManager;
+
+    @Override
+    @Transactional
+    public void transactionWithSave() {
+        News news1 = News.builder()
+                .title("a")
+                .build();
+
+        entityManager.persist(news1);
+
+        if (shouldThrowRuntimeException.get()) {
+            throw new RuntimeException("Breaking save news2");
+        }
+        News news2 = News.builder()
+                .title("b")
+                .build();
+
+        entityManager.persist(news2);
+    }
+
+    @Override
+    @Transactional
+    public void transactionWithSaveAndFlush() {
+        News news1 = News.builder()
+                .title("a")
+                .build();
+
+        entityManager.persist(news1);
+        entityManager.flush();
+
+        if (shouldThrowRuntimeException.get()) {
+            throw new RuntimeException("Breaking save news2");
+        }
+        News news2 = News.builder()
+                .title("b")
+                .build();
+
+        entityManager.persist(news2);
+        entityManager.flush();
+    }
+
+    @Override
+    public void privateTransactionWithSaveAndFlush() {
+        doPrivateTransactionWithSaveAndFlush();
+    }
+
+    @Transactional
+    private void doPrivateTransactionWithSaveAndFlush() {
+        News news1 = News.builder()
+                .title("a")
+                .build();
+
+        entityManager.persist(news1);
+        entityManager.flush();
+
+        if (shouldThrowRuntimeException.get()) {
+            throw new RuntimeException("Breaking save news2");
+        }
+        News news2 = News.builder()
+                .title("b")
+                .build();
+
+        entityManager.persist(news2);
+        entityManager.flush();
+    }
+}
