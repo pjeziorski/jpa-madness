@@ -20,8 +20,12 @@ public class UC6Basket {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    private String title;
+    @Column(name = "user_id", nullable = false)
+    private String userId;
 
     @OneToMany(mappedBy = "basket", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<UC6BasketItem> items;
+
+    @OneToMany(mappedBy = "basket", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<UC6BasketCoupon> coupons;
 }

@@ -41,6 +41,7 @@ TODO
 ### UC_TODO
 
 - sequences
+- flush / no flush
 - Mialem chyba zamiar zrobic podzial na zapis i odczyt ale rezygnuje (27.12.2025)
 
 ## Learnings

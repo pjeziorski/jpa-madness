@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+@Deprecated
 @DataJpaTest
 @ComponentScan("com.xpj.madness.jpa.services")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db

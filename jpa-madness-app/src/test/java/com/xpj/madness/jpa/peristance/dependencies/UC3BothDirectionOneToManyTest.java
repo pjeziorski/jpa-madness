@@ -202,7 +202,7 @@ public class UC3BothDirectionOneToManyTest {
         });
 
         long initialQueryCount = hibernateStatistics.getQueryCount();
-        System.out.println("Before when query count: " + initialQueryCount);
+        System.out.println("Before 'when' query count: " + initialQueryCount);
 
         // when, then
         adHocTransaction.readCommitted(() -> {
@@ -251,7 +251,7 @@ public class UC3BothDirectionOneToManyTest {
                         .build());
 
         long initialQueryCount = hibernateStatistics.getQueryCount();
-        System.out.println("Before when query count: " + initialQueryCount);
+        System.out.println("Before 'when' query count: " + initialQueryCount);
 
         // when
         uc3UserRepository.saveAndFlush(foundUser);
