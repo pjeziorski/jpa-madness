@@ -7,6 +7,7 @@
                 relativeToChangelogFile="true"
                 />
     </changeSet>
+
     <changeSet id="uc2" author="jpa-madness">
         <comment>Create UC2 tables</comment>
         <createTable tableName="uc2_city">
@@ -18,10 +19,19 @@
             </column>
         </createTable>
     </changeSet>
+
     <changeSet id="uc3" author="jpa-madness" runAlways="true">
         <comment>Create UC3 tables</comment>
         <sqlFile
                 path="sql/uc3_tables.sql"
+                relativeToChangelogFile="true"
+        />
+    </changeSet>
+
+    <changeSet id="uc6" author="jpa-madness" runAlways="true">
+        <comment>Create UC6 tables</comment>
+        <sqlFile
+                path="sql/uc6_tables.sql"
                 relativeToChangelogFile="true"
         />
     </changeSet>
