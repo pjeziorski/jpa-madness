@@ -37,9 +37,12 @@ TODO
 
 ### UC6: Eager Dependencies Tests
 
+TODO: aside basic, check dependency graph
 
 ### UC_TODO
 
+- transactions
+- isolation levels
 - sequences
 - flush / no flush
 - Mialem chyba zamiar zrobic podzial na zapis i odczyt ale rezygnuje (27.12.2025)
@@ -49,7 +52,7 @@ TODO
 ### Save vs SaveAndFlush
 
 - save() writes to database at the commit of the transaction
-- saveAndFlush() writes to database immediately but does commit the transaction
+- saveAndFlush() writes to database immediately but does not commit the transaction
 - because saveAndFlush() writes to database, it validates database constraints
 
 References:
@@ -79,7 +82,7 @@ Postgres:
 - Phantom Reads are not occurring due to MVCC  
   https://github.com/acakojic/postgresql-learning/blob/main/transactions/isolation-levels/1_13_postgresql_repeatable_read_transactional_isolation_level.md
 
-REMOVE:
+DOUBLE CHECK:
 - h2 does not fully support Serializable Isolation Level  
   In order to test it properly use real db (eg. postgres)
 - Postgres for Serializable needs SELECT on same table
@@ -87,7 +90,7 @@ REMOVE:
 
 ### Unit Testing
 
-In case you want to test multiple transactions insied single unit test and you expect to run them independently,
+In case you want to test multiple transactions inside single unit test and you expect to run them independently,
 you need to add annotation @Transactional(propagation = Propagation.NOT_SUPPORTED)
 See: https://stackoverflow.com/questions/27987097/disabling-transaction-on-spring-testing-test-method
 
