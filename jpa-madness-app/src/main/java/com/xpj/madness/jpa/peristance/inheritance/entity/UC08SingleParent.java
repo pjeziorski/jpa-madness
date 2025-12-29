@@ -17,7 +17,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="parent_type",
         discriminatorType = DiscriminatorType.STRING)
-public class UC08SingleParent {
+public abstract class UC08SingleParent {
 
     @Id
     @GeneratedValue(
