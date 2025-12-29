@@ -1,12 +1,12 @@
 package com.xpj.madness.jpa.peristance.inheritance.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.List;
 
 @SuperBuilder
 @NoArgsConstructor
@@ -16,9 +16,10 @@ import lombok.experimental.SuperBuilder;
 @DiscriminatorValue("Adam")
 public class UC08SingleAdamWithLazyChildren extends UC08SingleParent {
 
-    @Column(nullable = false)
+    @Column(name = "adam_surname", nullable = false)
     private String adamSurname;
 
-
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<UC08SingleAdamChild> adamsChildren;
 
 }

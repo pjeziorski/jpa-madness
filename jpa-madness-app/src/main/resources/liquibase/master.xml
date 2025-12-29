@@ -35,4 +35,12 @@
                 relativeToChangelogFile="true"
         />
     </changeSet>
+
+    <changeSet id="uc08_single" author="jpa-madness" runAlways="true">
+        <comment>Create UC8 single tables</comment>
+        <sqlFile
+                path="sql/uc08_single_tables.sql"
+                relativeToChangelogFile="true"
+        />
+    </changeSet>
 </databaseChangeLog>
