@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -90,6 +91,34 @@ public class UC08InheritanceSingleTableTest {
             // 2 select for beth sub children
             assertThat(hibernateStatistics.getQueryCount())
                     .isEqualTo(initialQueryCount + 3);
+        });
+    }
+
+    @Test
+    public void shouldFindAll_AdamAndBeth() {
+        // given
+        String testId = "test03";
+        uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleAdamWithLazyChildren(testId, "adam1"));
+        uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleAdamWithLazyChildren(testId, "adam2"));
+        uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleBethWithEagerChildren(testId, "beth1"));
+        uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleBethWithEagerChildren(testId, "beth2"));
+
+        // when, then
+        adHocTransaction.readCommitted(() -> {
+            long initialQueryCount = hibernateStatistics.getQueryCount();
+            System.out.println("Before 'when' query count: " + initialQueryCount);
+
+            Collection<UC08SingleParent> foundEntities = uc08SingleParentRepository.findAllByTestId(testId);
+
+            assertThat(foundEntities).hasSize(4);
+
+            // 1 select beth and its children
+            // 1 select for children of beth1
+            // 1 select for children of beth2
+            // 2 select for sub children of beth1
+            // 2 select for sub children of beth2
+            assertThat(hibernateStatistics.getQueryCount())
+                    .isEqualTo(initialQueryCount + 7);
         });
     }
 
