@@ -36,6 +36,35 @@ public class UC08SingleTableTestData {
         return entity;
     }
 
+    public static UC08SingleBethWithEagerChildren createUC08SingleBethWithEagerChildren(String testId, String surName) {
+        UC08SingleBethWithEagerChildren entity = UC08SingleBethWithEagerChildren.builder()
+                .testId(testId)
+                .bethSurname(surName)
+                .build();
+
+        // commonLazyChildren
+        List<UC08SingleCommonLazyChild> commonLazyChildren = new ArrayList<>();
+
+        commonLazyChildren.add(createUC08SingleCommonLazyChild("com-beth-1", 1));
+        commonLazyChildren.add(createUC08SingleCommonLazyChild("com-beth-2", 2));
+
+        commonLazyChildren.forEach(child -> child.setParent(entity));
+
+        entity.setCommonLazyChildren(commonLazyChildren);
+
+        // bethChildren
+        List<UC08SingleBethChild> bethChildren = new ArrayList<>();
+
+        bethChildren.add(createUC08SingleBethChild(surName + "-child-1", 1));
+        bethChildren.add(createUC08SingleBethChild(surName + "-child-2", 2));
+
+        bethChildren.forEach(child -> child.setParent(entity));
+
+        entity.setBethChildren(bethChildren);
+
+        return entity;
+    }
+
     public static UC08SingleCommonLazyChild createUC08SingleCommonLazyChild(String name, int numbOfSubChildren) {
         List<UC08SingleCommonLazyChildEagerSubChild> subChildren = new ArrayList<>();
 
@@ -75,6 +104,27 @@ public class UC08SingleTableTestData {
 
     public static UC08SingleAdamSubChild createUC08SingleAdamSubChild(String name) {
         return UC08SingleAdamSubChild.builder()
+                .name(name)
+                .build();
+    }
+
+    public static UC08SingleBethChild createUC08SingleBethChild(String name, int numbOfSubChildren) {
+        List<UC08SingleBethSubChild> subChildren = new ArrayList<>();
+
+        for (int i = 0; i < numbOfSubChildren; i++) {
+            subChildren.add(createUC08SingleBethSubChild(name + "-sub-" + i));
+        }
+        UC08SingleBethChild entity = UC08SingleBethChild.builder()
+                .name(name)
+                .bethSubChildren(subChildren)
+                .build();
+        subChildren.forEach(subChild -> subChild.setParent(entity));
+
+        return entity;
+    }
+
+    public static UC08SingleBethSubChild createUC08SingleBethSubChild(String name) {
+        return UC08SingleBethSubChild.builder()
                 .name(name)
                 .build();
     }

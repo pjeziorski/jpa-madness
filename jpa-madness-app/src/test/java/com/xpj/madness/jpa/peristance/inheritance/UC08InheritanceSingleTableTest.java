@@ -1,6 +1,7 @@
 package com.xpj.madness.jpa.peristance.inheritance;
 
 import com.xpj.madness.jpa.peristance.inheritance.entity.UC08SingleAdamWithLazyChildren;
+import com.xpj.madness.jpa.peristance.inheritance.entity.UC08SingleBethWithEagerChildren;
 import com.xpj.madness.jpa.peristance.inheritance.entity.UC08SingleParent;
 import com.xpj.madness.jpa.peristance.inheritance.repository.UC08SingleParentRepository;
 import com.xpj.madness.jpa.utils.AdHocTransaction;
@@ -44,7 +45,7 @@ public class UC08InheritanceSingleTableTest {
     }
 
     @Test
-    public void shouldFindAdamById() {
+    public void shouldFind_AdamById() {
         // given
         UC08SingleAdamWithLazyChildren entity = UC08SingleTableTestData.createUC08SingleAdamWithLazyChildren("test01", "findById");
 
@@ -64,6 +65,31 @@ public class UC08InheritanceSingleTableTest {
             // 1 select
             assertThat(hibernateStatistics.getQueryCount())
                     .isEqualTo(initialQueryCount + 1);
+        });
+    }
+
+    @Test
+    public void shouldFind_BethById() {
+        // given
+        UC08SingleBethWithEagerChildren entity = UC08SingleTableTestData.createUC08SingleBethWithEagerChildren("test02", "findById");
+
+        entity = uc08SingleParentRepository.saveAndFlush(entity);
+
+        Long entityId = entity.getId();
+
+        // when, then
+        adHocTransaction.readCommitted(() -> {
+            long initialQueryCount = hibernateStatistics.getQueryCount();
+            System.out.println("Before 'when' query count: " + initialQueryCount);
+
+            UC08SingleParent foundEntity = uc08SingleParentRepository.findById(entityId).get();
+
+            assertThat(foundEntity).isInstanceOf(UC08SingleBethWithEagerChildren.class);
+
+            // 1 select beth and its children
+            // 2 select for beth sub children
+            assertThat(hibernateStatistics.getQueryCount())
+                    .isEqualTo(initialQueryCount + 3);
         });
     }
 
