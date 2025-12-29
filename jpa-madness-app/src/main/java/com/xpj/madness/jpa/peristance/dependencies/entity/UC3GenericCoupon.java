@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "uc3_generic_coupon")
+@Table(name = "uc03_generic_coupon")
 public class UC3GenericCoupon {
 
     @Id

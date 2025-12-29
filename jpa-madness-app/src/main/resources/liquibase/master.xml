@@ -1,16 +1,16 @@
 <databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet id="uc1" author="jpa-madness">
+    <changeSet id="uc01" author="jpa-madness">
         <comment>Create UC1 tables</comment>
         <sqlFile
-                path="sql/uc1_tables.sql"
+                path="sql/uc01_tables.sql"
                 relativeToChangelogFile="true"
                 />
     </changeSet>
 
-    <changeSet id="uc2" author="jpa-madness">
+    <changeSet id="uc02" author="jpa-madness">
         <comment>Create UC2 tables</comment>
-        <createTable tableName="uc2_city">
+        <createTable tableName="uc02_city">
             <column name="id" type="varchar(255)">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -20,18 +20,18 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="uc3" author="jpa-madness" runAlways="true">
+    <changeSet id="uc03" author="jpa-madness" runAlways="true">
         <comment>Create UC3 tables</comment>
         <sqlFile
-                path="sql/uc3_tables.sql"
+                path="sql/uc03_tables.sql"
                 relativeToChangelogFile="true"
         />
     </changeSet>
 
-    <changeSet id="uc6" author="jpa-madness" runAlways="true">
+    <changeSet id="uc06" author="jpa-madness" runAlways="true">
         <comment>Create UC6 tables</comment>
         <sqlFile
-                path="sql/uc6_tables.sql"
+                path="sql/uc06_tables.sql"
                 relativeToChangelogFile="true"
         />
     </changeSet>

@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "uc6_basket")
+@Table(name = "uc06_basket")
 public class UC6Basket {
 
     @Id

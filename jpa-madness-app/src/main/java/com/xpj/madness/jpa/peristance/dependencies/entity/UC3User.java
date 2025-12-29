@@ -10,7 +10,7 @@ import java.util.Collection;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "uc3_user")
+@Table(name = "uc03_user")
 public class UC3User {
 
     @Id

@@ -11,17 +11,17 @@ import lombok.*;
 @EqualsAndHashCode(exclude = "user")
 @ToString(exclude = "user")
 @Entity
-@Table(name = "uc3_user_address")
+@Table(name = "uc03_user_address")
 public class UC3UserAddress {
 
     @Id
     @GeneratedValue(
             strategy = GenerationType.SEQUENCE,
-            generator = "uc3_user_address_sequence_generator"
+            generator = "uc03_user_address_sequence_generator"
     )
     @SequenceGenerator(
-            name = "uc3_user_address_sequence_generator",
-            sequenceName = "uc3_seq_user_address",
+            name = "uc03_user_address_sequence_generator",
+            sequenceName = "uc03_seq_user_address",
             allocationSize = 30
     )
     private Long id;

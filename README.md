@@ -13,36 +13,38 @@ In order to run it, you need to:
 
 ## Use Cases
 
-#### UC1: Constraints Tests
+#### UC01: Constraints Tests
 
 - Tests constraints (like not null) on database and on hibernate level
 
-### UC2: Entity References Tests
+### UC02: Entity References Tests
 
 - Tests what references are returned on hibernate methods
 - Liquibase create via xml
 
-### UC3: One to Many Dependencies Tests
+### UC03: One to Many Dependencies Tests
 
 - Tests saving One to Many Dependencies with different directions
 - TODO: Check Use Cases
 
-### UC4: One to One Dependencies Tests
+### UC04: One to One Dependencies Tests
 
 TODO
 
-### UC5: Many to Many Dependencies Tests
+### UC05: Many to Many Dependencies Tests
 
 TODO
 
-### UC6: Eager Dependencies Tests
+### UC06: Eager Dependencies Tests
 
 TODO: aside basic, check dependency graph
 
 ### UC_TODO
 
-- transactions
-- isolation levels
+- UC07 lazy dependencies
+- UC08 inheritance
+- UC09 transactions 
+- UC10 isolation levels
 - sequences
 - flush / no flush
 - Mialem chyba zamiar zrobic podzial na zapis i odczyt ale rezygnuje (27.12.2025)

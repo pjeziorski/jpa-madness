@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "uc6_basket_coupon")
+@Table(name = "uc06_basket_coupon")
 public class UC6BasketCoupon {
 
     @Id
