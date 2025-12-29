@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "uc06_basket_item")
-public class UC6BasketItem {
+public class UC06BasketItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -22,6 +22,6 @@ public class UC6BasketItem {
 
     @ManyToOne
     @JoinColumn(name="basket_id")
-    private UC6Basket basket;
+    private UC06Basket basket;
 
 }

@@ -12,7 +12,7 @@ import lombok.*;
 @ToString(exclude = "user")
 @Entity
 @Table(name = "uc03_user_address")
-public class UC3UserAddress {
+public class UC03UserAddress {
 
     @Id
     @GeneratedValue(
@@ -31,6 +31,6 @@ public class UC3UserAddress {
 
     @ManyToOne
     @JoinColumn(name="user_id")
-    private UC3User user;
+    private UC03User user;
 
 }

@@ -1,4 +1,4 @@
-package com.xpj.madness.jpa.peristance.constraints.entity;
+package com.xpj.madness.jpa.peristance.dependencies.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -6,21 +6,22 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @Builder
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "uc01_article")
-public class UC1ArticleEntity {
+@Data
+@Entity
+@Table(name = "uc06_basket_coupon")
+public class UC06BasketCoupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
-    // intentionally not marking not-null on entity level
-    private String title;
+    private String code;
 
-    @Column(nullable = false)
-    private String content;
+    @ManyToOne
+    @JoinColumn(name="basket_id")
+    private UC06Basket basket;
+
 }

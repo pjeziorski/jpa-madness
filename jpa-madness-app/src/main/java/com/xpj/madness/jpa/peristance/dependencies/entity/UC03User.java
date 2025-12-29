@@ -11,7 +11,7 @@ import java.util.Collection;
 @Data
 @Entity
 @Table(name = "uc03_user")
-public class UC3User {
+public class UC03User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -21,14 +21,14 @@ public class UC3User {
     private String name;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private Collection<UC3UserAddress> addresses;
+    private Collection<UC03UserAddress> addresses;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Collection<UC3UserCoupon> userCoupons;
+    private Collection<UC03UserCoupon> userCoupons;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    private Collection<UC3GenericCoupon> genericCoupons;
+    private Collection<UC03GenericCoupon> genericCoupons;
 
 }

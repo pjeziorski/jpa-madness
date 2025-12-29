@@ -1,9 +1,9 @@
 package com.xpj.madness.jpa.peristance.dependencies;
 
-import com.xpj.madness.jpa.peristance.dependencies.entity.UC3User;
-import com.xpj.madness.jpa.peristance.dependencies.entity.UC3UserAddress;
-import com.xpj.madness.jpa.peristance.dependencies.repository.UC3UserAddressRepository;
-import com.xpj.madness.jpa.peristance.dependencies.repository.UC3UserRepository;
+import com.xpj.madness.jpa.peristance.dependencies.entity.UC03User;
+import com.xpj.madness.jpa.peristance.dependencies.entity.UC03UserAddress;
+import com.xpj.madness.jpa.peristance.dependencies.repository.UC03UserAddressRepository;
+import com.xpj.madness.jpa.peristance.dependencies.repository.UC03UserRepository;
 import com.xpj.madness.jpa.utils.AdHocTransaction;
 import com.xpj.madness.jpa.utils.HibernateStatistics;
 import jakarta.annotation.PostConstruct;
@@ -25,13 +25,13 @@ import static org.assertj.core.api.Assertions.*;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
 @Transactional(propagation = Propagation.NOT_SUPPORTED) // all tests are not wrapped in single transaction
 @Import({AdHocTransaction.class, HibernateStatistics.class})
-public class UC3BothDirectionOneToManyTest {
+public class UC03BothDirectionOneToManyTest {
 
     @Autowired
-    private UC3UserRepository uc3UserRepository;
+    private UC03UserRepository uc03UserRepository;
     
     @Autowired
-    private UC3UserAddressRepository uc3UserAddressRepository;
+    private UC03UserAddressRepository uc03UserAddressRepository;
 
     @Autowired
     private AdHocTransaction adHocTransaction;
@@ -42,17 +42,17 @@ public class UC3BothDirectionOneToManyTest {
     @PostConstruct
     public void prepareDatabase() {
         // initialize sequences
-        UC3User user = UC3User.builder()
+        UC03User user = UC03User.builder()
                 .name("user_0")
                 .addresses(List.of(
-                        UC3UserAddress.builder()
+                        UC03UserAddress.builder()
                                 .city("city_0")
                                 .build())
                 )
                 .build();
         user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
 
-        uc3UserRepository.saveAndFlush(user);
+        uc03UserRepository.saveAndFlush(user);
     }
 
     @BeforeEach
@@ -65,13 +65,13 @@ public class UC3BothDirectionOneToManyTest {
         long initialQueryCount = hibernateStatistics.getQueryCount();
 
         // given
-        UC3User user = UC3User.builder()
+        UC03User user = UC03User.builder()
                 .name("user_1")
                 .addresses(List.of(
-                        UC3UserAddress.builder()
+                        UC03UserAddress.builder()
                                 .city("city_1")
                                 .build(),
-                        UC3UserAddress.builder()
+                        UC03UserAddress.builder()
                                 .city("city_2")
                                 .build()
                 ))
@@ -81,7 +81,7 @@ public class UC3BothDirectionOneToManyTest {
         user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
 
         // when
-        UC3User savedUser = uc3UserRepository.saveAndFlush(user);
+        UC03User savedUser = uc03UserRepository.saveAndFlush(user);
 
         // then
         // 1 insert of User + 2 insert of address
@@ -93,7 +93,7 @@ public class UC3BothDirectionOneToManyTest {
 
 
         adHocTransaction.readCommitted(() -> {
-            UC3User foundUser = uc3UserRepository.findById(savedUser.getId()).get();
+            UC03User foundUser = uc03UserRepository.findById(savedUser.getId()).get();
 
             assertThat(foundUser.getUserCoupons()).isEmpty();
             assertThat(foundUser.getGenericCoupons()).isEmpty();
@@ -110,13 +110,13 @@ public class UC3BothDirectionOneToManyTest {
     @Test
     public void shouldNotSaveUser_withNewAddresses_whenAddressReferencesAreNotSet() {
         // given
-        UC3User user = UC3User.builder()
+        UC03User user = UC03User.builder()
                 .name("user_1")
                 .addresses(List.of(
-                        UC3UserAddress.builder()
+                        UC03UserAddress.builder()
                                 .city("city_1")
                                 .build(),
-                        UC3UserAddress.builder()
+                        UC03UserAddress.builder()
                                 .city("city_2")
                                 .build()
                 ))
@@ -124,37 +124,37 @@ public class UC3BothDirectionOneToManyTest {
 
         // when, then
         assertThatExceptionOfType(DataIntegrityViolationException.class)
-                .isThrownBy(() -> uc3UserRepository.saveAndFlush(user));
+                .isThrownBy(() -> uc03UserRepository.saveAndFlush(user));
     }
     
     @Test
     public void shouldAllowSaveAddress_withMinimumUser() {
         // given
-        UC3User initUser = UC3User.builder()
+        UC03User initUser = UC03User.builder()
                 .name("user_3")
                 .build();
 
-        initUser = uc3UserRepository.saveAndFlush(initUser);
+        initUser = uc03UserRepository.saveAndFlush(initUser);
         
         assertThat(initUser.getId()).isNotNull();
 
-        UC3User minimumUser = UC3User.builder()
+        UC03User minimumUser = UC03User.builder()
                                 .id(initUser.getId())
                                 .build();
 
-        UC3UserAddress userAddress = UC3UserAddress.builder()
+        UC03UserAddress userAddress = UC03UserAddress.builder()
                 .city("city_5")
                 .user(minimumUser)
                 .build();
 
         // when
-        userAddress = uc3UserAddressRepository.saveAndFlush(userAddress);
+        userAddress = uc03UserAddressRepository.saveAndFlush(userAddress);
         
         // then
-        UC3User expectedUser = UC3User.builder()
+        UC03User expectedUser = UC03User.builder()
                 .id(initUser.getId())
                 .name("user_3")
-                .addresses(List.of(UC3UserAddress.builder()
+                .addresses(List.of(UC03UserAddress.builder()
                                 .id(userAddress.getId())
                                 .city("city_5")
                                 .build())
@@ -166,7 +166,7 @@ public class UC3BothDirectionOneToManyTest {
         expectedUser.getAddresses().forEach(userAddrr -> userAddrr.setUser(expectedUser));
 
         adHocTransaction.readCommitted(() -> {
-            UC3User foundUser = uc3UserRepository.findById(expectedUser.getId()).get();
+            UC03User foundUser = uc03UserRepository.findById(expectedUser.getId()).get();
 
             assertThat(foundUser).usingRecursiveComparison().isEqualTo(expectedUser);
         });
@@ -175,30 +175,30 @@ public class UC3BothDirectionOneToManyTest {
     @Test
     public void shouldNotAllowSaveAddress_withoutUser() {
         // given
-        UC3UserAddress userAddress = UC3UserAddress.builder()
+        UC03UserAddress userAddress = UC03UserAddress.builder()
                 .city("city_5")
                 .build();
 
         // when, then
         assertThatExceptionOfType(DataIntegrityViolationException.class)
-                .isThrownBy(() -> uc3UserAddressRepository.saveAndFlush(userAddress));
+                .isThrownBy(() -> uc03UserAddressRepository.saveAndFlush(userAddress));
     }
 
     @Test
     public void shouldSaveUser_withAdditionalAddresses() {
         // given
-        UC3User savedUser = adHocTransaction.readCommitted(() -> {
-            UC3User user = UC3User.builder()
+        UC03User savedUser = adHocTransaction.readCommitted(() -> {
+            UC03User user = UC03User.builder()
                     .name("user_1")
                     .addresses(List.of(
-                            UC3UserAddress.builder()
+                            UC03UserAddress.builder()
                                     .city("city_1")
                                     .build()
                     ))
                     .build();
             user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
 
-            return uc3UserRepository.saveAndFlush(user);
+            return uc03UserRepository.saveAndFlush(user);
         });
 
         long initialQueryCount = hibernateStatistics.getQueryCount();
@@ -206,13 +206,13 @@ public class UC3BothDirectionOneToManyTest {
 
         // when, then
         adHocTransaction.readCommitted(() -> {
-            UC3User user = uc3UserRepository.findById(savedUser.getId()).get();
-            user.getAddresses().add(UC3UserAddress.builder()
+            UC03User user = uc03UserRepository.findById(savedUser.getId()).get();
+            user.getAddresses().add(UC03UserAddress.builder()
                     .city("city_2")
                     .user(user)
                     .build());
 
-            uc3UserRepository.saveAndFlush(user);
+            uc03UserRepository.saveAndFlush(user);
 
             // 1 select user (don't know why...)
             // 1 insert of address
@@ -224,28 +224,28 @@ public class UC3BothDirectionOneToManyTest {
     @Test
     public void shouldSaveUser_withAdditionalAddresses_outsideTransaction() {
         // given
-        UC3User savedUser = adHocTransaction.readCommitted(() -> {
-            UC3User user = UC3User.builder()
+        UC03User savedUser = adHocTransaction.readCommitted(() -> {
+            UC03User user = UC03User.builder()
                     .name("user_1")
                     .addresses(List.of(
-                            UC3UserAddress.builder()
+                            UC03UserAddress.builder()
                                     .city("city_1")
                                     .build()
                     ))
                     .build();
             user.getAddresses().forEach(userAddress -> userAddress.setUser(user));
 
-            return uc3UserRepository.saveAndFlush(user);
+            return uc03UserRepository.saveAndFlush(user);
         });
 
-        UC3User foundUser = adHocTransaction.readCommitted(() -> {
-            UC3User user = uc3UserRepository.findById(savedUser.getId()).get();
+        UC03User foundUser = adHocTransaction.readCommitted(() -> {
+            UC03User user = uc03UserRepository.findById(savedUser.getId()).get();
             user.getAddresses().size(); // init lazy loading
 
             return user;
         });
 
-        foundUser.getAddresses().add(UC3UserAddress.builder()
+        foundUser.getAddresses().add(UC03UserAddress.builder()
                         .city("city_2")
                         .user(foundUser)
                         .build());
@@ -254,7 +254,7 @@ public class UC3BothDirectionOneToManyTest {
         System.out.println("Before 'when' query count: " + initialQueryCount);
 
         // when
-        uc3UserRepository.saveAndFlush(foundUser);
+        uc03UserRepository.saveAndFlush(foundUser);
 
         // then
         // 1 select address joined user

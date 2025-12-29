@@ -1,7 +1,7 @@
 package com.xpj.madness.jpa.peristance.constraints;
 
-import com.xpj.madness.jpa.peristance.constraints.entity.UC1ArticleEntity;
-import com.xpj.madness.jpa.peristance.constraints.repository.UC1ArticleEntityRepository;
+import com.xpj.madness.jpa.peristance.constraints.entity.UC01ArticleEntity;
+import com.xpj.madness.jpa.peristance.constraints.repository.UC01ArticleEntityRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -16,15 +16,15 @@ import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
-public class UC1ConstraintsTest {
+public class UC01ConstraintsTest {
 
     @Autowired
-    private UC1ArticleEntityRepository articleEntityRepository;
+    private UC01ArticleEntityRepository articleEntityRepository;
 
     @Test
     public void shouldValidate_EntityConstraints_onSave() {
         // given
-        UC1ArticleEntity article = UC1ArticleEntity.builder().build();
+        UC01ArticleEntity article = UC01ArticleEntity.builder().build();
 
         // validate entity constraints
         assertThatExceptionOfType(DataIntegrityViolationException.class)
@@ -38,18 +38,18 @@ public class UC1ConstraintsTest {
     @Test
     public void shouldNotValidate_DatabaseConstraints_onSave() {
         // given
-        UC1ArticleEntity article = UC1ArticleEntity.builder()
+        UC01ArticleEntity article = UC01ArticleEntity.builder()
                 .content("some content")
                 .build();
 
         // when
-        UC1ArticleEntity savedArticle = articleEntityRepository.save(article);
+        UC01ArticleEntity savedArticle = articleEntityRepository.save(article);
 
         // then
         assertThat(savedArticle.getId()).isNotNull();
         assertThat(savedArticle).isSameAs(article);
 
-        UC1ArticleEntity returnedArticle = articleEntityRepository.findById(savedArticle.getId()).get();
+        UC01ArticleEntity returnedArticle = articleEntityRepository.findById(savedArticle.getId()).get();
 
         assertThat(returnedArticle).isSameAs(savedArticle);
     }
@@ -57,7 +57,7 @@ public class UC1ConstraintsTest {
     @Test
     public void shouldValidate_EntityConstraints_onSaveAndFlush() {
         // given
-        UC1ArticleEntity article = UC1ArticleEntity.builder()
+        UC01ArticleEntity article = UC01ArticleEntity.builder()
                 .content("some content")
                 .build();
 
@@ -69,7 +69,7 @@ public class UC1ConstraintsTest {
     @Test
     public void shouldValidate_DatabaseConstraints_onSaveAndFlush() {
         // given
-        UC1ArticleEntity article = UC1ArticleEntity.builder().build();
+        UC01ArticleEntity article = UC01ArticleEntity.builder().build();
 
         // validate entity constraints
         assertThatExceptionOfType(DataIntegrityViolationException.class)
@@ -79,11 +79,11 @@ public class UC1ConstraintsTest {
     @Test
     public void shouldValidateConstraintsOnAllEntities_onSaveAndFlush() {
         // given
-        UC1ArticleEntity invalidArticle = UC1ArticleEntity.builder()
+        UC01ArticleEntity invalidArticle = UC01ArticleEntity.builder()
                 .content("some content")
                 .build();
 
-        UC1ArticleEntity validArticle = UC1ArticleEntity.builder()
+        UC01ArticleEntity validArticle = UC01ArticleEntity.builder()
                 .title("some title")
                 .content("some content")
                 .build();
@@ -99,12 +99,12 @@ public class UC1ConstraintsTest {
     @Test
     public void shouldSaveValidEntities() {
         // given
-        UC1ArticleEntity article1 = UC1ArticleEntity.builder()
+        UC01ArticleEntity article1 = UC01ArticleEntity.builder()
                 .title("title 1")
                 .content("some content")
                 .build();
 
-        UC1ArticleEntity article2 = UC1ArticleEntity.builder()
+        UC01ArticleEntity article2 = UC01ArticleEntity.builder()
                 .title("title 2")
                 .content("some content")
                 .build();
@@ -114,7 +114,7 @@ public class UC1ConstraintsTest {
         article2 = articleEntityRepository.saveAndFlush(article2);
 
         // then
-        List<UC1ArticleEntity> articles = articleEntityRepository.findAllById(List.of(article1.getId(), article2.getId()));
+        List<UC01ArticleEntity> articles = articleEntityRepository.findAllById(List.of(article1.getId(), article2.getId()));
 
         assertThat(articles.size()).isEqualTo(2);
     }

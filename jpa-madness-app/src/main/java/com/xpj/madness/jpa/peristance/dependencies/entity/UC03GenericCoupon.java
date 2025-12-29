@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "uc03_generic_coupon")
-public class UC3GenericCoupon {
+public class UC03GenericCoupon {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
