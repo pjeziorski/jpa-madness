@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "uc2_city")
-public class UC2CityEntity {
+@Table(name = "uc02_city")
+public class UC02CityEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
