@@ -43,4 +43,12 @@
                 relativeToChangelogFile="true"
         />
     </changeSet>
+
+    <changeSet id="uc08_joined" author="jpa-madness" runAlways="true">
+        <comment>Create UC8 joined tables</comment>
+        <sqlFile
+                path="sql/uc08_joined_tables.sql"
+                relativeToChangelogFile="true"
+        />
+    </changeSet>
 </databaseChangeLog>
