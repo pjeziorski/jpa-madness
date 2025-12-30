@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "uc08_single_common_lazy_child")
+@Table(name = "uc08_separate_common_lazy_child")
 public class UC08SeparateCommonLazyChild {
 
     @Id

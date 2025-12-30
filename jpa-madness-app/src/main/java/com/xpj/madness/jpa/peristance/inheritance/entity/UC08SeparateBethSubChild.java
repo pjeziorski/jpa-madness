@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 @Entity
-@Table(name = "uc08_single_beth_sub_child")
+@Table(name = "uc08_separate_beth_sub_child")
 public class UC08SeparateBethSubChild {
 
     @Id

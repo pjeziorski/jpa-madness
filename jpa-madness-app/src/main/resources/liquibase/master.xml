@@ -51,4 +51,12 @@
                 relativeToChangelogFile="true"
         />
     </changeSet>
+
+    <changeSet id="uc08_separate" author="jpa-madness" runAlways="true">
+        <comment>Create UC8 separate tables</comment>
+        <sqlFile
+                path="sql/uc08_separate_tables.sql"
+                relativeToChangelogFile="true"
+        />
+    </changeSet>
 </databaseChangeLog>
