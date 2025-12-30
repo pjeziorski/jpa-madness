@@ -99,8 +99,8 @@ public class UC08InheritanceSingleTableTest {
         // given
         String testId = "test03";
         uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleAdamWithLazyChildren(testId, "adam1"));
-        uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleAdamWithLazyChildren(testId, "adam2"));
         uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleBethWithEagerChildren(testId, "beth1"));
+        uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleAdamWithLazyChildren(testId, "adam2"));
         uc08SingleParentRepository.saveAndFlush(UC08SingleTableTestData.createUC08SingleBethWithEagerChildren(testId, "beth2"));
 
         // when, then

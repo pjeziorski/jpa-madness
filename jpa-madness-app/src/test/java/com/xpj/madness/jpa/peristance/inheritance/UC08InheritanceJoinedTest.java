@@ -66,7 +66,7 @@ public class UC08InheritanceJoinedTest {
         });
     }
 
-    /*@Test
+    @Test
     public void shouldFind_BethById() {
         // given
         UC08JoinedBethWithEagerChildren entity = UC08JoinedTableTestData.createUC08JoinedBethWithEagerChildren("test02", "findById");
@@ -96,8 +96,8 @@ public class UC08InheritanceJoinedTest {
         // given
         String testId = "test03";
         uc08JoinedParentRepository.saveAndFlush(UC08JoinedTableTestData.createUC08JoinedAdamWithLazyChildren(testId, "adam1"));
-        uc08JoinedParentRepository.saveAndFlush(UC08JoinedTableTestData.createUC08JoinedAdamWithLazyChildren(testId, "adam2"));
         uc08JoinedParentRepository.saveAndFlush(UC08JoinedTableTestData.createUC08JoinedBethWithEagerChildren(testId, "beth1"));
+        uc08JoinedParentRepository.saveAndFlush(UC08JoinedTableTestData.createUC08JoinedAdamWithLazyChildren(testId, "adam2"));
         uc08JoinedParentRepository.saveAndFlush(UC08JoinedTableTestData.createUC08JoinedBethWithEagerChildren(testId, "beth2"));
 
         // when, then
@@ -117,6 +117,6 @@ public class UC08InheritanceJoinedTest {
             assertThat(hibernateStatistics.getQueryCount())
                     .isEqualTo(initialQueryCount + 7);
         });
-    }*/
+    }
 
 }

@@ -36,7 +36,7 @@ public class UC08JoinedTableTestData {
         return entity;
     }
 
-    /*public static UC08JoinedBethWithEagerChildren createUC08JoinedBethWithEagerChildren(String testId, String surName) {
+    public static UC08JoinedBethWithEagerChildren createUC08JoinedBethWithEagerChildren(String testId, String surName) {
         UC08JoinedBethWithEagerChildren entity = UC08JoinedBethWithEagerChildren.builder()
                 .testId(testId)
                 .bethSurname(surName)
@@ -63,7 +63,7 @@ public class UC08JoinedTableTestData {
         entity.setBethChildren(bethChildren);
 
         return entity;
-    }*/
+    }
 
     public static UC08JoinedCommonLazyChild createUC08JoinedCommonLazyChild(String name, int numbOfSubChildren) {
         List<UC08JoinedCommonLazyChildEagerSubChild> subChildren = new ArrayList<>();
@@ -108,7 +108,7 @@ public class UC08JoinedTableTestData {
                 .build();
     }
 
-    /*public static UC08JoinedBethChild createUC08JoinedBethChild(String name, int numbOfSubChildren) {
+    public static UC08JoinedBethChild createUC08JoinedBethChild(String name, int numbOfSubChildren) {
         List<UC08JoinedBethSubChild> subChildren = new ArrayList<>();
 
         for (int i = 0; i < numbOfSubChildren; i++) {
@@ -127,6 +127,6 @@ public class UC08JoinedTableTestData {
         return UC08JoinedBethSubChild.builder()
                 .name(name)
                 .build();
-    }*/
+    }
 
 }
