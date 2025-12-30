@@ -10,12 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // to use application db
@@ -117,6 +119,17 @@ public class UC08InheritanceJoinedTest {
             assertThat(hibernateStatistics.getQueryCount())
                     .isEqualTo(initialQueryCount + 7);
         });
+    }
+
+    @Test
+    public void shouldFail_storingNotNullField() {
+        // initialize sequences
+        UC08JoinedAdamWithLazyChildren entity = UC08JoinedAdamWithLazyChildren.builder()
+                .testId("init-sequences")
+                .build();
+
+        assertThatExceptionOfType(DataIntegrityViolationException.class)
+                .isThrownBy(() -> uc08JoinedParentRepository.save(entity));
     }
 
 }

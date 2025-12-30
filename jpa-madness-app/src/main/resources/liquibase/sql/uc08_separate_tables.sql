@@ -32,7 +32,7 @@ CREATE TABLE uc08_separate_common_lazy_child_eager_sub_child (
 CREATE TABLE uc08_separate_adam (
     id BIGINT NOT NULL PRIMARY KEY,
     test_id VARCHAR(255) NOT NULL,
-    adam_surname VARCHAR(255) NULL
+    adam_surname VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE uc08_separate_adam_child (
@@ -54,7 +54,7 @@ CREATE TABLE uc08_separate_adam_sub_child (
 CREATE TABLE uc08_separate_beth (
     id BIGINT NOT NULL PRIMARY KEY,
     test_id VARCHAR(255) NOT NULL,
-    beth_surname VARCHAR(255) NULL
+    beth_surname VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE uc08_separate_beth_child (

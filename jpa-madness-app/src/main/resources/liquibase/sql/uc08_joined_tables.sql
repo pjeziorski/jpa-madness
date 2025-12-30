@@ -36,7 +36,7 @@ CREATE TABLE uc08_joined_common_lazy_child_eager_sub_child (
 
 CREATE TABLE uc08_joined_adam (
     id BIGINT NOT NULL PRIMARY KEY,
-    adam_surname VARCHAR(255) NULL
+    adam_surname VARCHAR(255) NOT NULL
     CONSTRAINT fk_uc08_joined_adam_parent FOREIGN KEY (id)
             REFERENCES uc08_joined_parent(id)
 );
@@ -59,7 +59,7 @@ CREATE TABLE uc08_joined_adam_sub_child (
 
 CREATE TABLE uc08_joined_beth (
     id BIGINT NOT NULL PRIMARY KEY,
-    beth_surname VARCHAR(255) NULL
+    beth_surname VARCHAR(255) NOT NULL
     CONSTRAINT fk_uc08_joined_beth_parent FOREIGN KEY (id)
             REFERENCES uc08_joined_parent(id)
 );
