@@ -39,6 +39,11 @@ TODO
 
 TODO: aside basic, check dependency graph
 
+### UC08: Inheritance types
+
+Lessons:
+- Adding discriminator column to JOINED inheritance does not change queries
+
 ### UC_TODO
 
 - UC07 lazy dependencies
